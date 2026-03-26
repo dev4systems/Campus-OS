@@ -47,15 +47,47 @@ export const attendanceData = [
 
 export const gradesData = {
   current: [
-    { code: "CS301", subject: "Data Structures", grade: "A", score: 89, maxScore: 100, classAvg: 72 },
-    { code: "CS302", subject: "Operating Systems", grade: "A-", score: 83, maxScore: 100, classAvg: 68 },
-    { code: "CS303", subject: "Computer Networks", grade: "B+", score: 78, maxScore: 100, classAvg: 65 },
-    { code: "CS304", subject: "Database Systems", grade: "A", score: 91, maxScore: 100, classAvg: 70 },
-    { code: "MA201", subject: "Probability & Statistics", grade: "B+", score: 76, maxScore: 100, classAvg: 62 },
-    { code: "HS201", subject: "Economics", grade: "A-", score: 85, maxScore: 100, classAvg: 74 },
+    { code: "CS301", subject: "Data Structures", grade: "A", score: 89, maxScore: 100, classAvg: 72, credits: 4 },
+    { code: "CS302", subject: "Operating Systems", grade: "A-", score: 83, maxScore: 100, classAvg: 68, credits: 4 },
+    { code: "CS303", subject: "Computer Networks", grade: "B+", score: 78, maxScore: 100, classAvg: 65, credits: 3 },
+    { code: "CS304", subject: "Database Systems", grade: "A", score: 91, maxScore: 100, classAvg: 70, credits: 4 },
+    { code: "MA201", subject: "Probability & Statistics", grade: "B+", score: 76, maxScore: 100, classAvg: 62, credits: 3 },
+    { code: "HS201", subject: "Economics", grade: "A-", score: 85, maxScore: 100, classAvg: 74, credits: 2 },
   ],
   semesterGPAs: [
     { sem: 1, gpa: 8.2 }, { sem: 2, gpa: 8.5 }, { sem: 3, gpa: 8.1 }, { sem: 4, gpa: 8.7 }, { sem: 5, gpa: 8.45 },
+  ],
+  previousSemesters: [
+    { sem: 1, sgpa: 8.2, courses: [
+      { code: "MA101", subject: "Mathematics I", grade: "A-", score: 82, maxScore: 100, credits: 4 },
+      { code: "PH101", subject: "Physics I", grade: "B+", score: 78, maxScore: 100, credits: 4 },
+      { code: "CS101", subject: "Intro to Programming", grade: "A", score: 90, maxScore: 100, credits: 3 },
+      { code: "ME101", subject: "Engineering Drawing", grade: "B+", score: 76, maxScore: 100, credits: 3 },
+      { code: "EE101", subject: "Basic Electrical", grade: "A-", score: 84, maxScore: 100, credits: 3 },
+      { code: "HS101", subject: "English", grade: "A", score: 88, maxScore: 100, credits: 2 },
+    ]},
+    { sem: 2, sgpa: 8.5, courses: [
+      { code: "MA102", subject: "Mathematics II", grade: "A", score: 88, maxScore: 100, credits: 4 },
+      { code: "CH101", subject: "Chemistry", grade: "A-", score: 83, maxScore: 100, credits: 4 },
+      { code: "CS102", subject: "Data Structures Basics", grade: "A", score: 91, maxScore: 100, credits: 3 },
+      { code: "ME102", subject: "Workshop Practice", grade: "B+", score: 77, maxScore: 100, credits: 3 },
+      { code: "EC101", subject: "Basic Electronics", grade: "A-", score: 85, maxScore: 100, credits: 3 },
+      { code: "HS102", subject: "Communication Skills", grade: "A", score: 89, maxScore: 100, credits: 2 },
+    ]},
+    { sem: 3, sgpa: 8.1, courses: [
+      { code: "MA201", subject: "Mathematics III", grade: "B+", score: 75, maxScore: 100, credits: 4 },
+      { code: "CS201", subject: "Object Oriented Programming", grade: "A", score: 92, maxScore: 100, credits: 4 },
+      { code: "CS202", subject: "Digital Logic Design", grade: "B+", score: 77, maxScore: 100, credits: 3 },
+      { code: "CS203", subject: "Discrete Mathematics", grade: "A-", score: 84, maxScore: 100, credits: 3 },
+      { code: "CS204", subject: "Computer Organization", grade: "B", score: 72, maxScore: 100, credits: 3 },
+    ]},
+    { sem: 4, sgpa: 8.7, courses: [
+      { code: "CS251", subject: "Design & Analysis of Algorithms", grade: "A", score: 93, maxScore: 100, credits: 4 },
+      { code: "CS252", subject: "Software Engineering", grade: "A", score: 90, maxScore: 100, credits: 4 },
+      { code: "CS253", subject: "Theory of Computation", grade: "A-", score: 86, maxScore: 100, credits: 3 },
+      { code: "CS254", subject: "Microprocessors", grade: "A-", score: 84, maxScore: 100, credits: 3 },
+      { code: "MA202", subject: "Numerical Methods", grade: "A", score: 88, maxScore: 100, credits: 3 },
+    ]},
   ],
 };
 
