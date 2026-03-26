@@ -3,13 +3,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { LogOut, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 
@@ -22,8 +23,14 @@ const AppHeader = () => {
           {user?.portal === "teacher" && user.department}
           {user?.portal === "admin" && "Administration"}
         </span>
+        {user?.isDemo && (
+          <span className="ml-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-nexus-amber/20 text-nexus-amber border border-nexus-amber/30">
+            Demo
+          </span>
+        )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
+        <ThemeToggle />
         <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
           <Bell className="h-4 w-4" />
           <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary" />
