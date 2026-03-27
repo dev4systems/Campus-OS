@@ -1,4 +1,5 @@
 import { feedbackData } from "@/data/mockData";
+import BugReportWidget from "@/components/BugReportWidget";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -76,6 +77,8 @@ const AdminFeedback = () => {
           );
         })}
       </div>
+
+      <BugReportWidget />
     </div>
   );
 };
