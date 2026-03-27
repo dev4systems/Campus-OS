@@ -1,19 +1,94 @@
-import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell } from "lucide-react";
+import { useState, useEffect } from "react";
+import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check } from "lucide-react";
 import StatCard from "@/components/StatCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { studentStats, assignmentsData, examsData, buzzPosts, trendingTags } from "@/data/mockData";
 
+const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
+
+const semesterSubjects: Record<number, { code: string; name: string; credits: number }[]> = {
+  1: [{ code: "MA101", name: "Mathematics I", credits: 4 }, { code: "PH101", name: "Physics I", credits: 4 }, { code: "CS101", name: "Intro to Programming", credits: 3 }],
+  2: [{ code: "MA102", name: "Mathematics II", credits: 4 }, { code: "CH101", name: "Chemistry", credits: 4 }, { code: "CS102", name: "Data Structures Basics", credits: 3 }],
+  3: [{ code: "CS201", name: "OOP", credits: 4 }, { code: "CS202", name: "Digital Logic", credits: 3 }, { code: "MA201", name: "Mathematics III", credits: 4 }],
+  4: [{ code: "CS251", name: "Algorithms", credits: 4 }, { code: "CS252", name: "Software Engineering", credits: 4 }, { code: "CS253", name: "Theory of Computation", credits: 3 }],
+  5: [{ code: "CS301", name: "Data Structures & Algorithms", credits: 4 }, { code: "CS302", name: "Operating Systems", credits: 4 }, { code: "CS303", name: "Computer Networks", credits: 3 }],
+  6: [{ code: "CS351", name: "Compiler Design", credits: 4 }, { code: "CS352", name: "AI & ML", credits: 4 }, { code: "CS353", name: "Information Security", credits: 3 }],
+  7: [{ code: "CS401", name: "Cloud Computing", credits: 4 }, { code: "CS402", name: "Deep Learning", credits: 3 }, { code: "CS403", name: "Big Data Analytics", credits: 3 }],
+  8: [{ code: "CS451", name: "Project", credits: 6 }, { code: "CS452", name: "Seminar", credits: 2 }],
+};
+
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const [selectedSem, setSelectedSem] = useState<number>(() => {
+    const saved = localStorage.getItem("cc_selected_sem");
+    return saved ? parseInt(saved, 10) : (user?.semester || 5);
+  });
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("cc_selected_sem", String(selectedSem));
+  }, [selectedSem]);
 
   const upcomingExam = examsData[0];
   const pendingAssignments = assignmentsData.filter((a) => a.status === "pending" || a.status === "overdue");
+  const subjects = semesterSubjects[selectedSem] || [];
+  const semGPA = studentStats.semesterGPAs.find(s => s.sem === selectedSem);
 
   return (
     <div className="space-y-6 max-w-6xl">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Welcome, {user?.name}</h1>
-        <p className="text-sm text-muted-foreground">Semester {user?.semester} · {user?.department}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Welcome, {user?.name}</h1>
+          <p className="text-sm text-muted-foreground">Semester {user?.semester} · {user?.department}</p>
+        </div>
+
+        {/* Semester Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground hover:border-primary/40 transition-colors min-w-[180px] justify-between"
+          >
+            <span>Semester {selectedSem}</span>
+            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+          </button>
+          {dropdownOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+              <div className="absolute right-0 top-full z-50 mt-1 w-full rounded-xl border border-border bg-card shadow-lg overflow-hidden">
+                {SEMESTERS.map((sem, i) => (
+                  <button
+                    key={sem}
+                    onClick={() => { setSelectedSem(sem); setDropdownOpen(false); }}
+                    className={`flex w-full items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-muted/50 ${selectedSem === sem ? "bg-primary/10 text-primary font-medium" : "text-foreground"}`}
+                    style={{ animationDelay: `${i * 40}ms` }}
+                  >
+                    <span>Semester {sem}</span>
+                    {selectedSem === sem && <Check className="h-4 w-4 text-primary" />}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Semester Subjects */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <BookOpen className="h-4 w-4 text-primary" /> Semester {selectedSem} Subjects
+          {semGPA && <span className="ml-auto text-xs text-muted-foreground">SGPA: {semGPA.gpa}</span>}
+        </h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {subjects.map((sub) => (
+            <div key={sub.code} className="rounded-lg border border-border bg-muted/20 p-3">
+              <p className="text-sm font-medium text-foreground">{sub.name}</p>
+              <p className="text-xs text-muted-foreground">{sub.code} · {sub.credits} Credits</p>
+            </div>
+          ))}
+        </div>
+        {subjects.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-4">No subject data available for this semester.</p>
+        )}
       </div>
 
       {/* Stats Grid */}
@@ -25,9 +100,7 @@ const StudentDashboard = () => {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Alerts & Upcoming */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Quick Alerts */}
           <div className="rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
               <Bell className="h-4 w-4 text-primary" /> Quick Alerts
@@ -54,7 +127,6 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          {/* Recent Achievements */}
           <div className="rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
               <Trophy className="h-4 w-4 text-nexus-amber" /> Recent Achievements
@@ -73,7 +145,6 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* Trending & Quick Links */}
         <div className="space-y-4">
           <div className="rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground mb-3">🔥 Campus Trending</h2>
