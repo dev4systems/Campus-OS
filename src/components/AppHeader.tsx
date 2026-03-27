@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
+import FuseSearch from "@/components/FuseSearch";
+import { timetableData, attendanceData } from "@/data/mockData";
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
@@ -13,6 +15,11 @@ const AppHeader = () => {
     await logout();
     navigate("/");
   };
+
+  const searchData = [
+    ...attendanceData.map(a => ({ title: a.subject, type: "Subject", code: a.code })),
+    ...timetableData.flatMap(d => d.slots.map(s => ({ title: s.subject, type: "Class", code: s.room }))),
+  ];
 
   return (
     <header className="h-14 flex items-center justify-between border-b border-border px-4 glass-strong">
@@ -28,6 +35,9 @@ const AppHeader = () => {
             Demo
           </span>
         )}
+      </div>
+      <div className="hidden md:block flex-1 max-w-sm mx-4">
+        <FuseSearch data={searchData} keys={["title", "code"]} displayKey="title" placeholder="Search courses, subjects..." />
       </div>
       <div className="flex items-center gap-1">
         <ThemeToggle />
