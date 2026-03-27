@@ -8,7 +8,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, Portal } from "@/contexts/AuthContext";
 import PortalCard from "@/components/PortalCard";
-import campusHero from "@/assets/campus-hero.jpg";
+import CampusImage from "@/components/CampusImage";
+
+const HERO_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/NIT_Durgapur_Main_Building.jpg/1280px-NIT_Durgapur_Main_Building.jpg";
+const CAMPUS_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/NIT_Durgapur.jpg/1280px-NIT_Durgapur.jpg";
 
 const portalConfig = [
   { key: "student" as Portal, title: "Student Portal", description: "Access your dashboard, timetable, grades & more", icon: GraduationCap, gradient: "bg-gradient-to-br from-primary/5 to-transparent" },
@@ -140,7 +143,7 @@ const Index = () => {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
-        <img src={campusHero} alt="NIT Durgapur Campus" className="h-full w-full object-cover" />
+        <CampusImage src={HERO_IMG} alt="NIT Durgapur Campus" className="h-full w-full" />
         <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
         <div className="absolute inset-0 hero-gradient opacity-60" />
       </div>

@@ -2,6 +2,7 @@ import { campusBuildings } from "@/data/mockData";
 import { useState } from "react";
 import { Search, MapPin, Building2, Layers } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import CampusImage from "@/components/CampusImage";
 
 const CampusNav = () => {
   const [query, setQuery] = useState("");
@@ -14,6 +15,12 @@ const CampusNav = () => {
 
   return (
     <div className="space-y-6 max-w-4xl">
+      {/* Campus Gate Hero */}
+      <CampusImage
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/NIT_Durgapur_Main_Gate.jpg/1280px-NIT_Durgapur_Main_Gate.jpg"
+        alt="NIT Durgapur Main Gate"
+        className="h-48 rounded-xl"
+      />
       <div>
         <h1 className="text-2xl font-bold text-foreground">Campus Navigation</h1>
         <p className="text-sm text-muted-foreground">Find buildings, rooms & get GPS directions</p>
