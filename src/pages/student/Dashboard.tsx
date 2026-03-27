@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check } from "lucide-react";
 import StatCard from "@/components/StatCard";
 import { useAuth } from "@/contexts/AuthContext";
-import { studentStats, assignmentsData, examsData, buzzPosts, trendingTags } from "@/data/mockData";
+import { studentStats, assignmentsData, examsData, buzzPosts, trendingTags, gradesData } from "@/data/mockData";
 
 const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -32,7 +32,7 @@ const StudentDashboard = () => {
   const upcomingExam = examsData[0];
   const pendingAssignments = assignmentsData.filter((a) => a.status === "pending" || a.status === "overdue");
   const subjects = semesterSubjects[selectedSem] || [];
-  const semGPA = studentStats.semesterGPAs.find(s => s.sem === selectedSem);
+  const semGPA = gradesData.semesterGPAs.find(s => s.sem === selectedSem);
 
   return (
     <div className="space-y-6 max-w-6xl">
