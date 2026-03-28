@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Search, MapPin, Building2, Layers } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import CampusImage from "@/components/CampusImage";
+import CampusMap from "@/components/CampusMap";
 
 const CampusNav = () => {
   const [query, setQuery] = useState("");
@@ -25,6 +26,8 @@ const CampusNav = () => {
         <h1 className="text-2xl font-bold text-foreground">Campus Navigation</h1>
         <p className="text-sm text-muted-foreground">Find buildings, rooms & get GPS directions</p>
       </div>
+
+      <CampusMap />
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
