@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check } from "lucide-react";
 import StatCard from "@/components/StatCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { studentStats, assignmentsData, examsData, buzzPosts, trendingTags, gradesData } from "@/data/mockData";
-
-const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const semesterSubjects: Record<number, { code: string; name: string; credits: number }[]> = {
   1: [{ code: "MA101", name: "Mathematics I", credits: 4 }, { code: "PH101", name: "Physics I", credits: 4 }, { code: "CS101", name: "Intro to Programming", credits: 3 }],
@@ -17,12 +17,58 @@ const semesterSubjects: Record<number, { code: string; name: string; credits: nu
   8: [{ code: "CS451", name: "Project", credits: 6 }, { code: "CS452", name: "Seminar", credits: 2 }],
 };
 
+function deriveSemester(createdAt: string): number {
+  const enrolled = new Date(createdAt);
+  const now = new Date();
+  const yearDiff = now.getFullYear() - enrolled.getFullYear();
+  const sem = yearDiff * 2 + (now.getMonth() >= 6 ? 1 : 0);
+  return Math.max(1, Math.min(sem, 8));
+}
+
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const [profileLoading, setProfileLoading] = useState(!user?.isDemo);
+  const [maxSem, setMaxSem] = useState<number>(user?.semester || 1);
+
+  // Fetch real semester from profile
+  useEffect(() => {
+    if (user?.isDemo) {
+      setMaxSem(user.semester || 5);
+      setProfileLoading(false);
+      return;
+    }
+    if (!user?.id) { setProfileLoading(false); return; }
+
+    supabase
+      .from("profiles")
+      .select("semester, created_at")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error || !data) {
+          setMaxSem(1); // safe fallback
+        } else if (data.semester && data.semester >= 1) {
+          setMaxSem(Math.min(data.semester, 8));
+        } else {
+          setMaxSem(deriveSemester(data.created_at));
+        }
+        setProfileLoading(false);
+      });
+  }, [user?.id, user?.isDemo, user?.semester]);
+
+  const availableSemesters = useMemo(() =>
+    Array.from({ length: maxSem }, (_, i) => i + 1), [maxSem]);
+
   const [selectedSem, setSelectedSem] = useState<number>(() => {
     const saved = localStorage.getItem("cc_selected_sem");
-    return saved ? parseInt(saved, 10) : (user?.semester || 5);
+    return saved ? parseInt(saved, 10) : (user?.semester || 1);
   });
+
+  // Clamp selected sem to maxSem once loaded
+  useEffect(() => {
+    if (selectedSem > maxSem) setSelectedSem(maxSem);
+  }, [maxSem, selectedSem]);
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -43,33 +89,37 @@ const StudentDashboard = () => {
         </div>
 
         {/* Semester Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground hover:border-primary/40 transition-colors min-w-[180px] justify-between"
-          >
-            <span>Semester {selectedSem}</span>
-            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
-          </button>
-          {dropdownOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-              <div className="absolute right-0 top-full z-50 mt-1 w-full rounded-xl border border-border bg-card shadow-lg overflow-hidden">
-                {SEMESTERS.map((sem, i) => (
-                  <button
-                    key={sem}
-                    onClick={() => { setSelectedSem(sem); setDropdownOpen(false); }}
-                    className={`flex w-full items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-muted/50 ${selectedSem === sem ? "bg-primary/10 text-primary font-medium" : "text-foreground"}`}
-                    style={{ animationDelay: `${i * 40}ms` }}
-                  >
-                    <span>Semester {sem}</span>
-                    {selectedSem === sem && <Check className="h-4 w-4 text-primary" />}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        {profileLoading ? (
+          <Skeleton className="h-10 w-[180px] rounded-xl" />
+        ) : (
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground hover:border-primary/40 transition-colors min-w-[180px] justify-between"
+            >
+              <span>Semester {selectedSem}</span>
+              <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+            {dropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                <div className="absolute right-0 top-full z-50 mt-1 w-full rounded-xl border border-border bg-card shadow-lg overflow-hidden">
+                  {availableSemesters.map((sem, i) => (
+                    <button
+                      key={sem}
+                      onClick={() => { setSelectedSem(sem); setDropdownOpen(false); }}
+                      className={`flex w-full items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-muted/50 ${selectedSem === sem ? "bg-primary/10 text-primary font-medium" : "text-foreground"}`}
+                      style={{ animationDelay: `${i * 40}ms` }}
+                    >
+                      <span>Semester {sem}</span>
+                      {selectedSem === sem && <Check className="h-4 w-4 text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Semester Subjects */}
