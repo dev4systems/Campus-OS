@@ -5,7 +5,6 @@ import { LogOut, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import FuseSearch from "@/components/FuseSearch";
-import { timetableData, attendanceData } from "@/data/mockData";
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
@@ -16,9 +15,19 @@ const AppHeader = () => {
     navigate("/");
   };
 
-  const searchData = [
-    ...attendanceData.map(a => ({ title: a.subject, type: "Subject", code: a.code })),
-    ...timetableData.flatMap(d => d.slots.map(s => ({ title: s.subject, type: "Class", code: s.room }))),
+  const APP_DATA = [
+    { title: "Dashboard", path: "/student/dashboard", type: "page" },
+    { title: "Timetable", path: "/student/timetable", type: "page" },
+    { title: "Assignments", path: "/student/assignments", type: "page" },
+    { title: "Campus Map", path: "/student/campus-nav", type: "page" },
+    { title: "Library", path: "/student/library", type: "page" },
+    { title: "Attendance", path: "/student/attendance", type: "page" },
+    { title: "Courses", path: "/student/courses", type: "page" },
+    { title: "Grades", path: "/student/grades", type: "page" },
+    { title: "Fees", path: "/student/fees", type: "page" },
+    { title: "Exams", path: "/student/exams", type: "page" },
+    { title: "Campus Buzz", path: "/student/campus-buzz", type: "page" },
+    { title: "Feedback", path: "/student/feedback", type: "page" },
   ];
 
   return (
@@ -37,7 +46,13 @@ const AppHeader = () => {
         )}
       </div>
       <div className="hidden md:block flex-1 max-w-sm mx-4">
-        <FuseSearch data={searchData} keys={["title", "code"]} displayKey="title" placeholder="Search courses, subjects..." />
+        <FuseSearch
+          data={APP_DATA}
+          keys={["title", "type"]}
+          displayKey="title"
+          placeholder="Search pages..."
+          onSelect={(item) => navigate(item.path)}
+        />
       </div>
       <div className="flex items-center gap-1">
         <ThemeToggle />
