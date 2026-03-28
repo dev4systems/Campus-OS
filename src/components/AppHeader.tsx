@@ -46,7 +46,13 @@ const AppHeader = () => {
         )}
       </div>
       <div className="hidden md:block flex-1 max-w-sm mx-4">
-        <FuseSearch data={searchData} keys={["title", "code"]} displayKey="title" placeholder="Search courses, subjects..." />
+        <FuseSearch
+          data={APP_DATA}
+          keys={["title", "type"]}
+          displayKey="title"
+          placeholder="Search pages..."
+          onSelect={(item) => navigate(item.path)}
+        />
       </div>
       <div className="flex items-center gap-1">
         <ThemeToggle />
