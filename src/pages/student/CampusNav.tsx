@@ -27,6 +27,8 @@ const CampusNav = () => {
         <p className="text-sm text-muted-foreground">Find buildings, rooms & get GPS directions</p>
       </div>
 
+      <CampusMap />
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input placeholder="Search buildings or rooms..." value={query} onChange={(e) => setQuery(e.target.value)} className="pl-10 bg-muted/50" />
