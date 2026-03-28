@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Search, MapPin, Building2, Layers } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import CampusImage from "@/components/CampusImage";
+import CampusMap from "@/components/CampusMap";
 
 const CampusNav = () => {
   const [query, setQuery] = useState("");
