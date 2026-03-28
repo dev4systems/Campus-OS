@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check } from "lucide-react";
 import StatCard from "@/components/StatCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { studentStats, assignmentsData, examsData, buzzPosts, trendingTags, gradesData } from "@/data/mockData";
-
-const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const semesterSubjects: Record<number, { code: string; name: string; credits: number }[]> = {
   1: [{ code: "MA101", name: "Mathematics I", credits: 4 }, { code: "PH101", name: "Physics I", credits: 4 }, { code: "CS101", name: "Intro to Programming", credits: 3 }],
@@ -17,12 +17,58 @@ const semesterSubjects: Record<number, { code: string; name: string; credits: nu
   8: [{ code: "CS451", name: "Project", credits: 6 }, { code: "CS452", name: "Seminar", credits: 2 }],
 };
 
+function deriveSemester(createdAt: string): number {
+  const enrolled = new Date(createdAt);
+  const now = new Date();
+  const yearDiff = now.getFullYear() - enrolled.getFullYear();
+  const sem = yearDiff * 2 + (now.getMonth() >= 6 ? 1 : 0);
+  return Math.max(1, Math.min(sem, 8));
+}
+
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const [profileLoading, setProfileLoading] = useState(!user?.isDemo);
+  const [maxSem, setMaxSem] = useState<number>(user?.semester || 1);
+
+  // Fetch real semester from profile
+  useEffect(() => {
+    if (user?.isDemo) {
+      setMaxSem(user.semester || 5);
+      setProfileLoading(false);
+      return;
+    }
+    if (!user?.id) { setProfileLoading(false); return; }
+
+    supabase
+      .from("profiles")
+      .select("semester, created_at")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error || !data) {
+          setMaxSem(1); // safe fallback
+        } else if (data.semester && data.semester >= 1) {
+          setMaxSem(Math.min(data.semester, 8));
+        } else {
+          setMaxSem(deriveSemester(data.created_at));
+        }
+        setProfileLoading(false);
+      });
+  }, [user?.id, user?.isDemo, user?.semester]);
+
+  const availableSemesters = useMemo(() =>
+    Array.from({ length: maxSem }, (_, i) => i + 1), [maxSem]);
+
   const [selectedSem, setSelectedSem] = useState<number>(() => {
     const saved = localStorage.getItem("cc_selected_sem");
-    return saved ? parseInt(saved, 10) : (user?.semester || 5);
+    return saved ? parseInt(saved, 10) : (user?.semester || 1);
   });
+
+  // Clamp selected sem to maxSem once loaded
+  useEffect(() => {
+    if (selectedSem > maxSem) setSelectedSem(maxSem);
+  }, [maxSem, selectedSem]);
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
