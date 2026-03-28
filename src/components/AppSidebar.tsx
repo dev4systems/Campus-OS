@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Calendar, ClipboardList, MapPin, BookOpen, BarChart3,
@@ -61,12 +62,49 @@ const AppSidebar = () => {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const prevCollapsed = useRef(collapsed);
+  const [animState, setAnimState] = useState<"idle" | "entering" | "exiting">("idle");
+
+  useEffect(() => {
+    if (prevCollapsed.current && !collapsed) {
+      setAnimState("entering");
+      const t = setTimeout(() => setAnimState("idle"), 600);
+      return () => clearTimeout(t);
+    }
+    if (!prevCollapsed.current && collapsed) {
+      setAnimState("exiting");
+      const t = setTimeout(() => setAnimState("idle"), 400);
+      return () => clearTimeout(t);
+    }
+    prevCollapsed.current = collapsed;
+  }, [collapsed]);
+
+  useEffect(() => { prevCollapsed.current = collapsed; });
 
   const navItems = user?.portal === "student" ? studentNav : user?.portal === "teacher" ? teacherNav : adminNav;
   const portalLabel = user?.portal === "student" ? "Student Portal" : user?.portal === "teacher" ? "Teacher Portal" : "Admin Portal";
+  const totalItems = navItems.length;
+
+  const getItemStyle = (index: number): React.CSSProperties => {
+    if (animState === "entering") {
+      return { animationDelay: `${index * 40}ms` };
+    }
+    if (animState === "exiting") {
+      return { animationDelay: `${(totalItems - 1 - index) * 30}ms` };
+    }
+    return {};
+  };
+
+  const getItemClass = () => {
+    if (animState === "entering") return "sidebar-item-enter";
+    if (animState === "exiting") return "sidebar-item-exit";
+    return "";
+  };
+
+  const panelClass = animState === "entering" ? "sidebar-panel-enter" : animState === "exiting" ? "sidebar-panel-exit" : "";
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border">
+    <Sidebar collapsible="icon" className={`border-r border-border ${panelClass}`}>
       <SidebarContent>
         {!collapsed && (
           <div className="px-4 pt-4 pb-2">
@@ -78,8 +116,8 @@ const AppSidebar = () => {
           <SidebarGroupLabel>{collapsed ? "" : "Navigation"}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
+              {navItems.map((item, index) => (
+                <SidebarMenuItem key={item.url} className={getItemClass()} style={getItemStyle(index)}>
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={item.url}
