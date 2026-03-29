@@ -56,8 +56,27 @@ const CampusNav = () => {
                 ))}
               </div>
             </div>
-            <button className="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors">
-              <MapPin className="h-4 w-4" /> Get GPS Directions
+            <button
+              onClick={() => {
+                const coords: Record<string, [number, number]> = {
+                  "Main Gate": [23.5412, 87.2921], "Academic Block": [23.5431, 87.2945],
+                  "Library": [23.5438, 87.2934], "Hostel Zone": [23.5418, 87.2908],
+                  "Canteen": [23.5425, 87.2951], "Admin Block": [23.5442, 87.2928],
+                  "Sports Complex": [23.5405, 87.2962],
+                };
+                const c = coords[selectedBuilding.name] || [23.5423, 87.2932];
+                const fallback = `https://www.openstreetmap.org/?mlat=${c[0]}&mlon=${c[1]}&zoom=18`;
+                if (!navigator.geolocation) { window.open(fallback, "_blank"); return; }
+                const t = setTimeout(() => window.open(fallback, "_blank"), 5000);
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => { clearTimeout(t); window.open(`https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${pos.coords.latitude},${pos.coords.longitude};${c[0]},${c[1]}`, "_blank"); },
+                  () => { clearTimeout(t); window.open(fallback, "_blank"); },
+                  { enableHighAccuracy: true, timeout: 5000 }
+                );
+              }}
+              className="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+            >
+              <MapPin className="h-4 w-4" /> Get Directions
             </button>
           </div>
         </div>

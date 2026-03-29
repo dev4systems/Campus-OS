@@ -3,12 +3,40 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 const MARKERS = [
-  { name: "Main Gate", lat: 23.5472, lng: 87.2955, desc: "Primary entrance to NIT Durgapur campus" },
-  { name: "Academic Block", lat: 23.5430, lng: 87.2940, desc: "Central academic & lecture hall complex" },
-  { name: "Library", lat: 23.5418, lng: 87.2925, desc: "Central Library — books, journals & e-resources" },
-  { name: "Hostel Zone", lat: 23.5400, lng: 87.2910, desc: "Student residential hostels area" },
-  { name: "Canteen", lat: 23.5425, lng: 87.2960, desc: "Main campus food court & canteen" },
+  { name: "Main Gate", lat: 23.5412, lng: 87.2921, desc: "Primary entrance to NIT Durgapur campus" },
+  { name: "Academic Block", lat: 23.5431, lng: 87.2945, desc: "Central academic & lecture hall complex" },
+  { name: "Library", lat: 23.5438, lng: 87.2934, desc: "Central Library — books, journals & e-resources" },
+  { name: "Hostel Zone", lat: 23.5418, lng: 87.2908, desc: "Student residential hostels area" },
+  { name: "Canteen", lat: 23.5425, lng: 87.2951, desc: "Main campus food court & canteen" },
+  { name: "Admin Block", lat: 23.5442, lng: 87.2928, desc: "Administrative offices" },
+  { name: "Sports Complex", lat: 23.5405, lng: 87.2962, desc: "Indoor & outdoor sports facilities" },
 ];
+
+function getDirections(lat: number, lng: number, name: string) {
+  const fallbackUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}&zoom=18`;
+
+  if (!navigator.geolocation) {
+    window.open(fallbackUrl, "_blank");
+    return;
+  }
+
+  const timeout = setTimeout(() => {
+    window.open(fallbackUrl, "_blank");
+  }, 5000);
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      clearTimeout(timeout);
+      const url = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${pos.coords.latitude},${pos.coords.longitude};${lat},${lng}`;
+      window.open(url, "_blank");
+    },
+    () => {
+      clearTimeout(timeout);
+      window.open(fallbackUrl, "_blank");
+    },
+    { enableHighAccuracy: true, timeout: 5000 }
+  );
+}
 
 function createCircleIcon() {
   return L.divIcon({
@@ -44,12 +72,20 @@ const CampusMap = () => {
       L.marker([m.lat, m.lng], { icon })
         .addTo(map)
         .bindPopup(
-          `<div style="font-family:Inter,system-ui,sans-serif"><strong style="font-size:14px">${m.name}</strong><p style="margin:4px 0 0;font-size:12px;color:#666">${m.desc}</p></div>`,
+          `<div style="font-family:Inter,system-ui,sans-serif">
+            <strong style="font-size:14px">${m.name}</strong>
+            <p style="margin:4px 0 8px;font-size:12px;color:#666">${m.desc}</p>
+            <button onclick="window.__getDirections(${m.lat},${m.lng},'${m.name}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;background:hsl(210,100%,52%);color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer">
+              📍 Get Directions
+            </button>
+          </div>`,
           { className: "leaflet-popup-themed" }
         );
     });
 
-    // Mobile: enable scroll zoom on click
+    // Expose directions helper for popup buttons
+    (window as any).__getDirections = getDirections;
+
     if (window.innerWidth < 768) {
       map.on("click", () => map.scrollWheelZoom.enable());
       map.on("mouseout", () => map.scrollWheelZoom.disable());
@@ -61,6 +97,7 @@ const CampusMap = () => {
     return () => {
       map.remove();
       mapInstance.current = null;
+      delete (window as any).__getDirections;
     };
   }, []);
 
