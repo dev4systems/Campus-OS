@@ -51,6 +51,29 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminFeedback from "./pages/admin/AdminFeedback";
 
 const queryClient = new QueryClient();
+const ScrollRevealObserver = () => {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    const observe = () => {
+      document.querySelectorAll(".scroll-reveal:not(.revealed)").forEach((el) => observer.observe(el));
+    };
+    observe();
+    const mo = new MutationObserver(observe);
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => { observer.disconnect(); mo.disconnect(); };
+  }, []);
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
