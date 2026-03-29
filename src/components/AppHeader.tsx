@@ -6,6 +6,15 @@ import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import FuseSearch from "@/components/FuseSearch";
 
+const AppHeader = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
   return (
     <header className="h-14 flex items-center justify-between border-b border-border px-4 glass-strong">
       <div className="flex items-center gap-2">
