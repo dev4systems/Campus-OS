@@ -1,77 +1,77 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Search, Clock, X, Loader2 } from "lucide-react";
-import Fuse, { type IFuseOptions, type FuseResult } from "fuse.js";
+import { useNavigate } from "react-router-dom";
+import { Search, Clock, FileText, Loader2 } from "lucide-react";
+import Fuse from "fuse.js";
 
-interface FuseSearchProps<T> {
-  data: T[];
-  keys: string[];
-  onSelect?: (item: T) => void;
-  placeholder?: string;
-  displayKey?: string;
+interface AppItem {
+  title: string;
+  path: string;
+  type: string;
 }
 
+const APP_DATA: AppItem[] = [
+  { title: "Dashboard", path: "/student/dashboard", type: "page" },
+  { title: "Timetable", path: "/student/timetable", type: "page" },
+  { title: "Assignments", path: "/student/assignments", type: "page" },
+  { title: "Campus Map", path: "/student/campus-nav", type: "page" },
+  { title: "Library", path: "/student/library", type: "page" },
+  { title: "Attendance", path: "/student/attendance", type: "page" },
+  { title: "Courses", path: "/student/courses", type: "page" },
+  { title: "Grades", path: "/student/grades", type: "page" },
+  { title: "Fees", path: "/student/fees", type: "page" },
+  { title: "Exams", path: "/student/exams", type: "page" },
+  { title: "Campus Buzz", path: "/student/campus-buzz", type: "page" },
+  { title: "Feedback", path: "/student/feedback", type: "page" },
+];
+
+const fuse = new Fuse(APP_DATA, {
+  keys: ["title"],
+  threshold: 0.4,
+  includeMatches: true,
+  minMatchCharLength: 2,
+});
+
 const RECENT_KEY = "cc_recent_searches";
-const MAX_RECENT = 8;
-const MAX_CACHE = 50;
+const MAX_RECENT = 6;
 
 function getRecent(): string[] {
   try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch { return []; }
 }
-function saveRecent(searches: string[]) {
-  localStorage.setItem(RECENT_KEY, JSON.stringify(searches.slice(0, MAX_RECENT)));
+function saveRecent(items: string[]) {
+  localStorage.setItem(RECENT_KEY, JSON.stringify(items.slice(0, MAX_RECENT)));
 }
 
 function highlightMatch(text: string, indices: readonly [number, number][]): React.ReactNode[] {
   if (!indices?.length) return [text];
-  const result: React.ReactNode[] = [];
-  let lastIndex = 0;
+  const parts: React.ReactNode[] = [];
+  let last = 0;
   for (const [start, end] of indices) {
-    if (start > lastIndex) result.push(text.slice(lastIndex, start));
-    result.push(<mark key={start} className="bg-accent/30 text-foreground rounded-sm px-0.5">{text.slice(start, end + 1)}</mark>);
-    lastIndex = end + 1;
+    if (start > last) parts.push(text.slice(last, start));
+    parts.push(<mark key={start} className="bg-accent/30 text-foreground rounded-sm px-0.5">{text.slice(start, end + 1)}</mark>);
+    last = end + 1;
   }
-  if (lastIndex < text.length) result.push(text.slice(lastIndex));
-  return result;
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
 }
 
-function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, placeholder = "Search...", displayKey }: FuseSearchProps<T>) {
+interface FuseSearchProps {
+  placeholder?: string;
+}
+
+const FuseSearch = ({ placeholder = "Search pages..." }: FuseSearchProps) => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<FuseResult<T>[]>([]);
+  const [results, setResults] = useState<ReturnType<typeof fuse.search>>([]);
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [searching, setSearching] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>(getRecent);
-
-  const cacheRef = useRef(new Map<string, FuseResult<T>[]>());
-  const cacheQueue = useRef<string[]>([]);
+  const [recent, setRecent] = useState<string[]>(getRecent);
   const timerRef = useRef<number>();
   const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
 
-  const fuseRef = useRef<Fuse<T>>();
-  useEffect(() => {
-    const opts: IFuseOptions<T> = { keys, threshold: 0.35, includeMatches: true, minMatchCharLength: 2 };
-    fuseRef.current = new Fuse(data, opts);
-  }, [data, keys]);
-
-  const search = useCallback((q: string) => {
-    const key = q.toLowerCase().trim();
-    if (!key) { setResults([]); setSearching(false); return; }
-
-    if (cacheRef.current.has(key)) {
-      setResults(cacheRef.current.get(key)!);
-      setSearching(false);
-      return;
-    }
-
-    const r = fuseRef.current?.search(q, { limit: 6 }) || [];
-    cacheRef.current.set(key, r);
-    cacheQueue.current.push(key);
-    if (cacheQueue.current.length > MAX_CACHE) {
-      const oldest = cacheQueue.current.shift()!;
-      cacheRef.current.delete(oldest);
-    }
-    setResults(r);
+  const doSearch = useCallback((q: string) => {
+    if (!q.trim()) { setResults([]); setSearching(false); return; }
+    setResults(fuse.search(q).slice(0, 6));
     setSearching(false);
   }, []);
 
@@ -81,21 +81,21 @@ function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, place
     if (timerRef.current) clearTimeout(timerRef.current);
     if (!val.trim()) { setResults([]); setSearching(false); return; }
     setSearching(true);
-    timerRef.current = window.setTimeout(() => search(val), 300);
+    timerRef.current = window.setTimeout(() => doSearch(val), 300);
   };
 
-  const selectItem = (item: T, text: string) => {
-    const recent = [text, ...recentSearches.filter(r => r !== text)].slice(0, MAX_RECENT);
-    setRecentSearches(recent);
-    saveRecent(recent);
+  const selectItem = (item: AppItem, text: string) => {
+    const updated = [text, ...recent.filter(r => r !== text)].slice(0, MAX_RECENT);
+    setRecent(updated);
+    saveRecent(updated);
     setOpen(false);
-    setQuery(text);
-    onSelect?.(item);
+    setQuery("");
+    navigate(item.path);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     const items = query.trim() ? results : [];
-    const recentItems = !query.trim() ? recentSearches : [];
+    const recentItems = !query.trim() ? recent : [];
     const total = items.length || recentItems.length;
 
     if (e.key === "ArrowDown") { e.preventDefault(); setActiveIdx(i => Math.min(i + 1, total - 1)); }
@@ -103,15 +103,16 @@ function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, place
     else if (e.key === "Enter" && activeIdx >= 0) {
       e.preventDefault();
       if (items.length && items[activeIdx]) {
-        const dk = displayKey || keys[0];
-        selectItem(items[activeIdx].item, String(items[activeIdx].item[dk] || ""));
+        selectItem(items[activeIdx].item, items[activeIdx].item.title);
+      } else if (recentItems.length && recentItems[activeIdx]) {
+        setQuery(recentItems[activeIdx]);
+        handleChange(recentItems[activeIdx]);
       }
     }
     else if (e.key === "Escape") { setOpen(false); }
   };
 
-  const showDropdown = open && (query.trim() ? true : recentSearches.length > 0);
-  const dk = displayKey || keys[0];
+  const showDropdown = open && (query.trim() ? true : recent.length > 0);
 
   return (
     <div className="relative w-full max-w-md">
@@ -127,7 +128,7 @@ function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, place
           onBlur={() => setTimeout(() => setOpen(false), 200)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full h-12 md:h-[48px] pl-11 pr-4 rounded-full border border-border bg-card text-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+          className="w-full h-12 pl-11 pr-4 rounded-full border border-border bg-card text-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-ring transition-all"
           role="combobox"
           aria-expanded={showDropdown}
           aria-autocomplete="list"
@@ -136,17 +137,16 @@ function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, place
 
       {showDropdown && (
         <div
-          ref={listRef}
           className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-card shadow-lg max-h-80 overflow-auto origin-top animate-in fade-in zoom-in-95"
           role="listbox"
         >
-          {!query.trim() && recentSearches.length > 0 && (
+          {!query.trim() && recent.length > 0 && (
             <>
               <div className="flex items-center justify-between px-4 py-2 border-b border-border">
                 <span className="text-xs font-medium text-muted-foreground">Recent Searches</span>
-                <button onClick={() => { setRecentSearches([]); saveRecent([]); }} className="text-xs text-muted-foreground hover:text-foreground">Clear</button>
+                <button onClick={() => { setRecent([]); saveRecent([]); }} className="text-xs text-muted-foreground hover:text-foreground">Clear</button>
               </div>
-              {recentSearches.map((r, i) => (
+              {recent.map((r, i) => (
                 <button
                   key={r}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition-colors ${activeIdx === i ? "bg-accent/10" : "hover:bg-muted/50"}`}
@@ -169,8 +169,8 @@ function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, place
           )}
 
           {query.trim() && results.map((r, i) => {
-            const match = r.matches?.find(m => m.key === dk);
-            const text = String(r.item[dk] || "");
+            const match = r.matches?.find(m => m.key === "title");
+            const text = r.item.title;
             return (
               <button
                 key={i}
@@ -179,10 +179,11 @@ function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, place
                 aria-selected={activeIdx === i}
                 onMouseDown={() => selectItem(r.item, text)}
               >
-                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span className="text-foreground">
+                <FileText className="h-4 w-4 text-primary shrink-0" />
+                <span className="text-foreground flex-1">
                   {match ? highlightMatch(text, match.indices as [number, number][]) : text}
                 </span>
+                <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{r.item.type}</span>
               </button>
             );
           })}
@@ -190,6 +191,6 @@ function FuseSearch<T extends Record<string, any>>({ data, keys, onSelect, place
       )}
     </div>
   );
-}
+};
 
 export default FuseSearch;
