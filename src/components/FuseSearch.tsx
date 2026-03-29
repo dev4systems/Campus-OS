@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Clock, FileText, Loader2 } from "lucide-react";
-import Fuse from "fuse.js";
+import Fuse, { type FuseResult } from "fuse.js";
 
 interface AppItem {
   title: string;
@@ -61,7 +61,7 @@ interface FuseSearchProps {
 const FuseSearch = ({ placeholder = "Search pages..." }: FuseSearchProps) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Fuse.FuseResult<AppItem>[]>([]);
+  const [results, setResults] = useState<FuseResult<AppItem>[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [searching, setSearching] = useState(false);
