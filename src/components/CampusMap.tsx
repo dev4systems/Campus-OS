@@ -13,7 +13,7 @@ const MARKERS = [
 ];
 
 function getDirections(lat: number, lng: number, name: string) {
-  const fallbackUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}&zoom=18`;
+  const fallbackUrl = `https://www.google.com/maps?q=${lat},${lng}`;
 
   if (!navigator.geolocation) {
     window.open(fallbackUrl, "_blank");
@@ -27,7 +27,7 @@ function getDirections(lat: number, lng: number, name: string) {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       clearTimeout(timeout);
-      const url = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${pos.coords.latitude},${pos.coords.longitude};${lat},${lng}`;
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${pos.coords.latitude},${pos.coords.longitude}&destination=${lat},${lng}`;
       window.open(url, "_blank");
     },
     () => {

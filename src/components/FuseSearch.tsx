@@ -1,8 +1,3 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Clock, FileText, Loader2 } from "lucide-react";
-import Fuse, { type FuseResult } from "fuse.js";
-
 interface AppItem {
   title: string;
   path: string;
@@ -23,6 +18,11 @@ const APP_DATA: AppItem[] = [
   { title: "Campus Buzz", path: "/student/campus-buzz", type: "page" },
   { title: "Feedback", path: "/student/feedback", type: "page" },
 ];
+
+import { useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { Search, Clock, FileText, Loader2 } from "lucide-react";
+import Fuse, { type FuseResult } from "fuse.js";
 
 const fuse = new Fuse(APP_DATA, {
   keys: ["title"],
