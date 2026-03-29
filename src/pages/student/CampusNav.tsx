@@ -65,11 +65,11 @@ const CampusNav = () => {
                   "Sports Complex": [23.5405, 87.2962],
                 };
                 const c = coords[selectedBuilding.name] || [23.5423, 87.2932];
-                const fallback = `https://www.openstreetmap.org/?mlat=${c[0]}&mlon=${c[1]}&zoom=18`;
+                const fallback = `https://www.google.com/maps?q=${c[0]},${c[1]}`;
                 if (!navigator.geolocation) { window.open(fallback, "_blank"); return; }
                 const t = setTimeout(() => window.open(fallback, "_blank"), 5000);
                 navigator.geolocation.getCurrentPosition(
-                  (pos) => { clearTimeout(t); window.open(`https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${pos.coords.latitude},${pos.coords.longitude};${c[0]},${c[1]}`, "_blank"); },
+                  (pos) => { clearTimeout(t); window.open(`https://www.google.com/maps/dir/?api=1&origin=${pos.coords.latitude},${pos.coords.longitude}&destination=${c[0]},${c[1]}`, "_blank"); },
                   () => { clearTimeout(t); window.open(fallback, "_blank"); },
                   { enableHighAccuracy: true, timeout: 5000 }
                 );
