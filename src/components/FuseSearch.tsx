@@ -61,7 +61,7 @@ interface FuseSearchProps {
 const FuseSearch = ({ placeholder = "Search pages..." }: FuseSearchProps) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<ReturnType<typeof fuse.search>>([]);
+  const [results, setResults] = useState<Fuse.FuseResult<AppItem>[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [searching, setSearching] = useState(false);
