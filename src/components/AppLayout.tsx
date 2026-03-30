@@ -5,22 +5,42 @@ import AppSidebar from "@/components/AppSidebar";
 import AppHeader from "@/components/AppHeader";
 import AnimatedPage from "@/components/AnimatedPage";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AppLayoutProps {
   children: ReactNode;
   requiredPortal?: Portal;
 }
 
+const LayoutSkeleton = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="w-full max-w-6xl p-6 space-y-6">
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-3 w-32" />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-24 rounded-xl" />
+        ))}
+      </div>
+      <div className="grid lg:grid-cols-3 gap-6">
+        <Skeleton className="h-48 rounded-xl lg:col-span-2" />
+        <Skeleton className="h-48 rounded-xl" />
+      </div>
+    </div>
+  </div>
+);
+
 const AppLayout = ({ children, requiredPortal }: AppLayoutProps) => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
+    return <LayoutSkeleton />;
   }
 
   if (!isAuthenticated || !user) return <Navigate to="/" replace />;

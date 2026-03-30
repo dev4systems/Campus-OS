@@ -18,16 +18,16 @@ const Library = () => {
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input placeholder="Search by title, author, or ISBN..." value={query} onChange={(e) => setQuery(e.target.value)} className="pl-10 bg-muted/50" />
       </div>
 
       <div className="space-y-3">
-        {filtered.map((book) => (
-          <div key={book.id} className="rounded-xl border border-border bg-card p-5">
+        {filtered.map((book, i) => (
+          <div key={book.id} className="scroll-reveal rounded-xl border border-border bg-card p-5" style={{ transitionDelay: `${i * 70}ms` }}>
             <div className="flex items-start gap-4">
               <div className="h-16 w-12 rounded bg-primary/10 flex items-center justify-center shrink-0">
-                <BookOpen className="h-6 w-6 text-primary" />
+                <BookOpen className="h-8 w-8 text-primary" />
               </div>
               <div className="flex-1 space-y-2">
                 <div className="flex items-start justify-between gap-2">
@@ -43,7 +43,7 @@ const Library = () => {
                   <span>{book.subject}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
-                  <MapPin className="h-3 w-3 text-primary" />
+                  <MapPin className="h-4 w-4 text-primary" />
                   <span className="text-muted-foreground">Room {book.room} · Stack {book.stack} · {book.shelf}</span>
                   <button className="ml-2 text-primary font-medium hover:underline">Get Directions</button>
                 </div>

@@ -29,7 +29,7 @@ const TeacherGrades = () => {
         </Select>
       </div>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="scroll-reveal rounded-xl border border-border bg-card overflow-hidden">
         <div className="grid grid-cols-[1fr_80px_80px] sm:grid-cols-[1fr_100px_100px_80px] gap-4 p-4 border-b border-border text-xs font-semibold text-muted-foreground uppercase">
           <span>Student</span>
           <span className="hidden sm:block">Roll No</span>

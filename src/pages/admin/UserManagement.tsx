@@ -30,12 +30,12 @@ const UserManagement = () => {
           <h1 className="text-2xl font-bold text-foreground">User Management</h1>
           <p className="text-sm text-muted-foreground">{users.length} users in system</p>
         </div>
-        <Button size="sm"><UserPlus className="h-4 w-4 mr-1" /> Add User</Button>
+        <Button size="sm"><UserPlus className="h-5 w-5 mr-1" /> Add User</Button>
       </div>
 
       <div className="flex gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input placeholder="Search users..." value={query} onChange={(e) => setQuery(e.target.value)} className="pl-10 bg-muted/50" />
         </div>
         <Select onValueChange={setRoleFilter} defaultValue="all">
@@ -44,7 +44,7 @@ const UserManagement = () => {
         </Select>
       </div>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="scroll-reveal rounded-xl border border-border bg-card overflow-hidden">
         <div className="divide-y divide-border">
           {filtered.map((u) => (
             <div key={u.id} className="p-4 flex items-center justify-between hover:bg-muted/20 transition-colors">
@@ -58,7 +58,7 @@ const UserManagement = () => {
               <div className="flex items-center gap-3">
                 <Badge variant="outline" className="text-xs">{u.role}</Badge>
                 <Badge className={u.status === "active" ? "bg-status-success/10 text-status-success border-status-success/20" : "bg-muted text-muted-foreground"}>{u.status}</Badge>
-                <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8" data-tooltip="More options"><MoreHorizontal className="h-5 w-5" /></Button>
               </div>
             </div>
           ))}

@@ -23,8 +23,8 @@ const TeacherDashboard = () => {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="rounded-xl border border-border bg-card p-5">
-          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4"><Bell className="h-4 w-4 text-primary" /> Alerts</h2>
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
+          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4"><Bell className="h-5 w-5 text-primary" /> Alerts</h2>
           <div className="space-y-3">
             <div className="rounded-lg bg-status-warning/5 border border-status-warning/20 p-3">
               <p className="text-sm font-medium text-foreground">Mid-sem syllabus upload deadline</p>
@@ -37,8 +37,8 @@ const TeacherDashboard = () => {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5">
-          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4"><Calendar className="h-4 w-4 text-primary" /> Today's Classes</h2>
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
+          <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4"><Calendar className="h-5 w-5 text-primary" /> Today's Classes</h2>
           <div className="space-y-2">
             {[
               { time: "9:00 - 10:00", subject: "CS301 (Sec A)", room: "LH-201" },

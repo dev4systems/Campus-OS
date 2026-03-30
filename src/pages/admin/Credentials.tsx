@@ -1,5 +1,4 @@
 import { Key, Shield, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const auditLog = [
   { action: "Password Reset", user: "admin@nitdgp.ac.in", target: "arjun@nitdgp.ac.in", time: "2026-03-09 14:32", ip: "10.0.1.52" },
@@ -17,22 +16,22 @@ const Credentials = () => {
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4">
-        <div className="rounded-xl border border-status-success/20 bg-status-success/5 p-4 flex items-center gap-3">
-          <Shield className="h-5 w-5 text-status-success" />
+        <div className="scroll-reveal rounded-xl border border-status-success/20 bg-status-success/5 p-4 flex items-center gap-3">
+          <Shield className="h-6 w-6 text-status-success" />
           <div>
             <p className="text-sm font-bold text-foreground">Secure</p>
             <p className="text-xs text-muted-foreground">All systems operational</p>
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-3">
-          <Clock className="h-5 w-5 text-primary" />
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-4 flex items-center gap-3" style={{ transitionDelay: "70ms" }}>
+          <Clock className="h-6 w-6 text-primary" />
           <div>
             <p className="text-sm font-bold text-foreground">Last Backup</p>
             <p className="text-xs text-muted-foreground">Today, 03:00 AM</p>
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-3">
-          <Key className="h-5 w-5 text-nexus-amber" />
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-4 flex items-center gap-3" style={{ transitionDelay: "140ms" }}>
+          <Key className="h-6 w-6 text-nexus-amber" />
           <div>
             <p className="text-sm font-bold text-foreground">Encryption</p>
             <p className="text-xs text-muted-foreground">AES-256 Active</p>
@@ -40,7 +39,7 @@ const Credentials = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card">
+      <div className="scroll-reveal rounded-xl border border-border bg-card">
         <div className="p-4 border-b border-border">
           <h2 className="text-sm font-semibold text-foreground">Audit Log</h2>
         </div>

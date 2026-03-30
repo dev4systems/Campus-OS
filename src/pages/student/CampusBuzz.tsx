@@ -48,8 +48,7 @@ const CampusBuzz = () => {
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          {/* Create Post */}
-          <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="scroll-reveal rounded-xl border border-border bg-card p-4 space-y-3">
             <div className="flex gap-2 overflow-x-auto pb-1">
               {Object.entries(typeLabels).slice(0, 5).map(([key, label]) => (
                 <button key={key} onClick={() => setPostType(key)} className={`px-2.5 py-1 rounded-full text-xs whitespace-nowrap transition-all ${postType === key ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}>
@@ -64,14 +63,13 @@ const CampusBuzz = () => {
                 I confirm this post is college-appropriate
               </label>
               <Button size="sm" onClick={handlePost} disabled={!newPost.trim()}>
-                <Send className="h-3 w-3 mr-1" /> Post
+                <Send className="h-4 w-4 mr-1" /> Post
               </Button>
             </div>
           </div>
 
-          {/* Feed */}
-          {buzzPosts.map((post) => (
-            <div key={post.id} className="rounded-xl border border-border bg-card p-4">
+          {buzzPosts.map((post, i) => (
+            <div key={post.id} className="scroll-reveal rounded-xl border border-border bg-card p-4" style={{ transitionDelay: `${i * 70}ms` }}>
               <div className="flex items-center gap-3 mb-3">
                 <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">{post.avatar}</div>
                 <div>
@@ -85,22 +83,21 @@ const CampusBuzz = () => {
               </div>
               <div className="flex items-center gap-4 text-muted-foreground">
                 <button onClick={() => toggleLike(post.id)} className={`flex items-center gap-1 text-xs hover:text-primary transition-colors ${likedPosts.has(post.id) ? "text-primary" : ""}`}>
-                  <Heart className={`h-4 w-4 ${likedPosts.has(post.id) ? "fill-primary" : ""}`} /> {post.likes + (likedPosts.has(post.id) ? 1 : 0)}
+                  <Heart className={`h-5 w-5 ${likedPosts.has(post.id) ? "fill-primary" : ""}`} /> {post.likes + (likedPosts.has(post.id) ? 1 : 0)}
                 </button>
-                <button className="flex items-center gap-1 text-xs hover:text-primary transition-colors"><MessageCircle className="h-4 w-4" /> {post.comments}</button>
-                <button className="flex items-center gap-1 text-xs hover:text-primary transition-colors"><Share2 className="h-4 w-4" /> Share</button>
+                <button className="flex items-center gap-1 text-xs hover:text-primary transition-colors"><MessageCircle className="h-5 w-5" /> {post.comments}</button>
+                <button className="flex items-center gap-1 text-xs hover:text-primary transition-colors"><Share2 className="h-5 w-5" /> Share</button>
                 <button onClick={() => toggleSave(post.id)} className={`flex items-center gap-1 text-xs hover:text-primary transition-colors ${savedPosts.has(post.id) ? "text-primary" : ""}`}>
-                  <Bookmark className={`h-4 w-4 ${savedPosts.has(post.id) ? "fill-primary" : ""}`} />
+                  <Bookmark className={`h-5 w-5 ${savedPosts.has(post.id) ? "fill-primary" : ""}`} />
                 </button>
-                <button className="flex items-center gap-1 text-xs hover:text-status-danger transition-colors ml-auto"><Flag className="h-3.5 w-3.5" /></button>
+                <button className="flex items-center gap-1 text-xs hover:text-status-danger transition-colors ml-auto"><Flag className="h-4 w-4" /></button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Trending Sidebar */}
         <div className="space-y-4">
-          <div className="rounded-xl border border-border bg-card p-4">
+          <div className="scroll-reveal rounded-xl border border-border bg-card p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">🔥 Trending Now</h3>
             <div className="space-y-2.5">
               {trendingTags.map((tag) => (

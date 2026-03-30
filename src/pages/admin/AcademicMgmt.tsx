@@ -18,24 +18,24 @@ const AcademicMgmt = () => {
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4">
-        <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <Calendar className="h-5 w-5 mx-auto text-primary mb-1" />
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-4 text-center">
+          <Calendar className="h-6 w-6 mx-auto text-primary mb-1" />
           <p className="text-lg font-bold text-foreground">Spring 2026</p>
           <p className="text-xs text-muted-foreground">Current Semester</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <BookOpen className="h-5 w-5 mx-auto text-primary mb-1" />
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-4 text-center" style={{ transitionDelay: "70ms" }}>
+          <BookOpen className="h-6 w-6 mx-auto text-primary mb-1" />
           <p className="text-lg font-bold text-foreground">{courses.length}</p>
           <p className="text-xs text-muted-foreground">Active Courses</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <Users className="h-5 w-5 mx-auto text-primary mb-1" />
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-4 text-center" style={{ transitionDelay: "140ms" }}>
+          <Users className="h-6 w-6 mx-auto text-primary mb-1" />
           <p className="text-lg font-bold text-foreground">{courses.reduce((s, c) => s + c.enrolled, 0)}</p>
           <p className="text-xs text-muted-foreground">Total Enrollments</p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="scroll-reveal rounded-xl border border-border bg-card overflow-hidden">
         <div className="grid grid-cols-[1fr_1fr_80px_80px] gap-4 p-4 border-b border-border text-xs font-semibold text-muted-foreground uppercase">
           <span>Course</span><span>Faculty</span><span>Credits</span><span>Enrolled</span>
         </div>

@@ -17,7 +17,7 @@ const Attendance = () => {
         <p className="text-sm text-muted-foreground">Subject-wise attendance breakdown</p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
+      <div className="scroll-reveal rounded-xl border border-border bg-card p-5 flex items-center gap-4">
         <div className="h-16 w-16 rounded-full border-4 border-primary flex items-center justify-center">
           <span className="text-xl font-bold text-foreground">{overall}%</span>
         </div>
@@ -28,10 +28,10 @@ const Attendance = () => {
       </div>
 
       <div className="space-y-3">
-        {attendanceData.map((subject) => {
+        {attendanceData.map((subject, i) => {
           const colors = statusColors[subject.status];
           return (
-            <div key={subject.code} className={`rounded-xl border ${colors.border} ${colors.bg} p-5`}>
+            <div key={subject.code} className={`scroll-reveal rounded-xl border ${colors.border} ${colors.bg} p-5`} style={{ transitionDelay: `${i * 70}ms` }}>
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">

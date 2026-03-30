@@ -22,14 +22,14 @@ const Communication = () => {
         <p className="text-sm text-muted-foreground">Send announcements and messages</p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-        <h2 className="font-semibold text-foreground flex items-center gap-2"><Megaphone className="h-4 w-4 text-primary" /> New Announcement</h2>
+      <div className="scroll-reveal rounded-xl border border-border bg-card p-5 space-y-4">
+        <h2 className="font-semibold text-foreground flex items-center gap-2"><Megaphone className="h-5 w-5 text-primary" /> New Announcement</h2>
         <Select><SelectTrigger className="bg-muted/30"><SelectValue placeholder="Select Subject/Section" /></SelectTrigger>
           <SelectContent>{teacherSubjects.map((s, i) => <SelectItem key={i} value={`${s.code}-${s.section}`}>{s.name} (Sec {s.section})</SelectItem>)}</SelectContent>
         </Select>
         <Textarea placeholder="Type your announcement..." value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="bg-muted/30" />
         <Button onClick={() => { toast({ title: "Announcement Sent" }); setMessage(""); }}>
-          <Send className="h-4 w-4 mr-1" /> Send
+          <Send className="h-5 w-5 mr-1" /> Send
         </Button>
       </div>
 
@@ -37,7 +37,7 @@ const Communication = () => {
         <h2 className="text-sm font-semibold text-foreground mb-3">Recent Announcements</h2>
         <div className="space-y-3">
           {announcements.map((a, i) => (
-            <div key={i} className="rounded-xl border border-border bg-card p-4">
+            <div key={i} className="scroll-reveal rounded-xl border border-border bg-card p-4" style={{ transitionDelay: `${i * 70}ms` }}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-medium text-primary">{a.subject}</span>
                 <span className="text-xs text-muted-foreground">{a.date} · {a.views} views</span>
