@@ -1,4 +1,4 @@
-import { Settings as SettingsIcon, Globe, Calendar, Shield } from "lucide-react";
+import { Globe, Calendar, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -14,8 +14,8 @@ const AdminSettings = () => {
       </div>
 
       <div className="space-y-6">
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-          <h2 className="font-semibold text-foreground flex items-center gap-2"><Globe className="h-4 w-4 text-primary" /> Institution Info</h2>
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-5 space-y-4">
+          <h2 className="font-semibold text-foreground flex items-center gap-2"><Globe className="h-5 w-5 text-primary" /> Institution Info</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Institution Name</label>
@@ -36,8 +36,8 @@ const AdminSettings = () => {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-          <h2 className="font-semibold text-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /> Academic Settings</h2>
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-5 space-y-4" style={{ transitionDelay: "70ms" }}>
+          <h2 className="font-semibold text-foreground flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Academic Settings</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Semester Start</label>
@@ -58,8 +58,8 @@ const AdminSettings = () => {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-          <h2 className="font-semibold text-foreground flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> System Configuration</h2>
+        <div className="scroll-reveal rounded-xl border border-border bg-card p-5 space-y-4" style={{ transitionDelay: "140ms" }}>
+          <h2 className="font-semibold text-foreground flex items-center gap-2"><Shield className="h-5 w-5 text-[#8b5cf6]" /> System Configuration</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Backup Frequency</label>

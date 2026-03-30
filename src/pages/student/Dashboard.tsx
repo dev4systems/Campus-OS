@@ -30,7 +30,6 @@ const StudentDashboard = () => {
   const [profileLoading, setProfileLoading] = useState(!user?.isDemo);
   const [maxSem, setMaxSem] = useState<number>(user?.semester || 1);
 
-  // Fetch real semester from profile
   useEffect(() => {
     if (user?.isDemo) {
       setMaxSem(user.semester || 5);
@@ -46,7 +45,7 @@ const StudentDashboard = () => {
       .maybeSingle()
       .then(({ data, error }) => {
         if (error || !data) {
-          setMaxSem(1); // safe fallback
+          setMaxSem(1);
         } else if (data.semester && data.semester >= 1) {
           setMaxSem(Math.min(data.semester, 8));
         } else {
@@ -64,7 +63,6 @@ const StudentDashboard = () => {
     return saved ? parseInt(saved, 10) : (user?.semester || 1);
   });
 
-  // Clamp selected sem to maxSem once loaded
   useEffect(() => {
     if (selectedSem > maxSem) setSelectedSem(maxSem);
   }, [maxSem, selectedSem]);
@@ -88,7 +86,6 @@ const StudentDashboard = () => {
           <p className="text-sm text-muted-foreground">Semester {user?.semester} · {user?.department}</p>
         </div>
 
-        {/* Semester Dropdown */}
         {profileLoading ? (
           <Skeleton className="h-10 w-[180px] rounded-xl" />
         ) : (
@@ -123,9 +120,9 @@ const StudentDashboard = () => {
       </div>
 
       {/* Semester Subjects */}
-      <div className="rounded-xl border border-border bg-card p-5">
+      <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
         <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-primary" /> Semester {selectedSem} Subjects
+          <BookOpen className="h-5 w-5 text-primary" /> Semester {selectedSem} Subjects
           {semGPA && <span className="ml-auto text-xs text-muted-foreground">SGPA: {semGPA.gpa}</span>}
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -151,14 +148,14 @@ const StudentDashboard = () => {
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
-              <Bell className="h-4 w-4 text-primary" /> Quick Alerts
+              <Bell className="h-5 w-5 text-primary" /> Quick Alerts
             </h2>
             <div className="space-y-3">
               {upcomingExam && (
                 <div className="flex items-start gap-3 rounded-lg bg-status-warning/5 border border-status-warning/20 p-3">
-                  <Calendar className="h-4 w-4 text-status-warning mt-0.5 shrink-0" />
+                  <Calendar className="h-5 w-5 text-status-warning mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-foreground">{upcomingExam.type}: {upcomingExam.subject}</p>
                     <p className="text-xs text-muted-foreground">{upcomingExam.date} · {upcomingExam.time} · {upcomingExam.room}</p>
@@ -167,7 +164,7 @@ const StudentDashboard = () => {
               )}
               {pendingAssignments.map((a) => (
                 <div key={a.id} className={`flex items-start gap-3 rounded-lg p-3 ${a.status === "overdue" ? "bg-status-danger/5 border border-status-danger/20" : "bg-muted/30 border border-border"}`}>
-                  <ClipboardList className={`h-4 w-4 mt-0.5 shrink-0 ${a.status === "overdue" ? "text-status-danger" : "text-muted-foreground"}`} />
+                  <ClipboardList className={`h-5 w-5 mt-0.5 shrink-0 ${a.status === "overdue" ? "text-status-danger" : "text-muted-foreground"}`} />
                   <div>
                     <p className="text-sm font-medium text-foreground">{a.title}</p>
                     <p className="text-xs text-muted-foreground">{a.subject} · Due: {a.dueDate} {a.status === "overdue" && "· OVERDUE"}</p>
@@ -177,9 +174,9 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
-              <Trophy className="h-4 w-4 text-nexus-amber" /> Recent Achievements
+              <Trophy className="h-5 w-5 text-nexus-amber" /> Recent Achievements
             </h2>
             <div className="space-y-3">
               {buzzPosts.filter((p) => p.type === "achievement" || p.type === "news").slice(0, 3).map((post) => (
@@ -196,7 +193,7 @@ const StudentDashboard = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground mb-3">🔥 Campus Trending</h2>
             <div className="space-y-2">
               {trendingTags.slice(0, 5).map((tag) => (
@@ -208,7 +205,7 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground mb-3">📅 Upcoming Events</h2>
             <div className="space-y-2">
               {buzzPosts.filter((p) => p.type === "event").slice(0, 3).map((event) => (
@@ -220,12 +217,12 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground mb-3">📚 Quick Links</h2>
             <div className="grid grid-cols-2 gap-2">
               {[{ label: "Timetable", icon: Calendar }, { label: "Library", icon: BookOpen }, { label: "Grades", icon: Trophy }, { label: "Fees", icon: CreditCard }].map((link) => (
                 <button key={link.label} className="flex items-center gap-2 rounded-lg bg-muted/30 p-2.5 text-sm text-foreground hover:bg-muted/50 transition-colors">
-                  <link.icon className="h-3.5 w-3.5 text-primary" />
+                  <link.icon className="h-5 w-5 text-primary" />
                   {link.label}
                 </button>
               ))}

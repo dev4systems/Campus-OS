@@ -30,19 +30,19 @@ const Assignments = () => {
       </div>
 
       <div className="space-y-3">
-        {filtered.map((assignment) => {
+        {filtered.map((assignment, i) => {
           const status = statusConfig[assignment.status];
           const StatusIcon = status.icon;
           const daysLeft = Math.ceil((new Date(assignment.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
           return (
-            <div key={assignment.id} className="rounded-xl border border-border bg-card p-5">
+            <div key={assignment.id} className="scroll-reveal rounded-xl border border-border bg-card p-5" style={{ transitionDelay: `${i * 70}ms` }}>
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-2 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="outline" className="text-xs">{assignment.subject}</Badge>
                     <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border ${status.className}`}>
-                      <StatusIcon className="h-3 w-3" /> {status.label}
+                      <StatusIcon className="h-4 w-4" /> {status.label}
                     </div>
                   </div>
                   <h3 className="font-semibold text-foreground">{assignment.title}</h3>
@@ -59,9 +59,9 @@ const Assignments = () => {
                   )}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Button variant="outline" size="sm" className="text-xs"><Download className="h-3 w-3 mr-1" /> PDF</Button>
+                  <Button variant="outline" size="sm" className="text-xs"><Download className="h-4 w-4 mr-1" /> PDF</Button>
                   {assignment.status !== "submitted" && (
-                    <Button size="sm" className="text-xs"><Upload className="h-3 w-3 mr-1" /> Submit</Button>
+                    <Button size="sm" className="text-xs"><Upload className="h-4 w-4 mr-1" /> Submit</Button>
                   )}
                 </div>
               </div>

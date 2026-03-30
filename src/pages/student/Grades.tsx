@@ -9,8 +9,6 @@ import jsPDF from "jspdf";
 const generateGradeCard = (semData: { sem: number; sgpa: number; courses: any[] }, studentName: string, rollNo: string) => {
   const doc = new jsPDF();
   const w = doc.internal.pageSize.getWidth();
-
-  // Header
   doc.setFillColor(13, 71, 161);
   doc.rect(0, 0, w, 45, "F");
   doc.setTextColor(255, 255, 255);
@@ -21,8 +19,6 @@ const generateGradeCard = (semData: { sem: number; sgpa: number; courses: any[] 
   doc.text("Grade Card — Semester " + semData.sem, w / 2, 28, { align: "center" });
   doc.setFontSize(10);
   doc.text("Mahatma Gandhi Avenue, Durgapur - 713209, West Bengal", w / 2, 38, { align: "center" });
-
-  // Student info
   doc.setTextColor(30, 30, 30);
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
@@ -30,8 +26,6 @@ const generateGradeCard = (semData: { sem: number; sgpa: number; courses: any[] 
   doc.text(`Roll No: ${rollNo}`, 20, 66);
   doc.text(`Semester: ${semData.sem}`, w - 80, 58);
   doc.text(`SGPA: ${semData.sgpa}`, w - 80, 66);
-
-  // Table header
   let y = 82;
   doc.setFillColor(240, 240, 240);
   doc.rect(20, y - 6, w - 40, 10, "F");
@@ -42,8 +36,6 @@ const generateGradeCard = (semData: { sem: number; sgpa: number; courses: any[] 
   doc.text("Credits", 130, y);
   doc.text("Score", 152, y);
   doc.text("Grade", 175, y);
-
-  // Table rows
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   semData.courses.forEach((c) => {
@@ -58,8 +50,6 @@ const generateGradeCard = (semData: { sem: number; sgpa: number; courses: any[] 
     doc.setDrawColor(220, 220, 220);
     doc.line(20, y + 3, w - 20, y + 3);
   });
-
-  // Footer
   y += 20;
   doc.setFillColor(13, 71, 161);
   doc.rect(20, y, w - 40, 0.5, "F");
@@ -67,14 +57,12 @@ const generateGradeCard = (semData: { sem: number; sgpa: number; courses: any[] 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.text(`Semester GPA: ${semData.sgpa}`, 24, y);
-
   y += 25;
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(120, 120, 120);
   doc.text("This is a system-generated grade card from Nexus — NIT Durgapur Campus Portal", w / 2, y, { align: "center" });
   doc.text(`Generated on: ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`, w / 2, y + 6, { align: "center" });
-
   doc.save(`GradeCard_Sem${semData.sem}_${rollNo}.pdf`);
 };
 
@@ -83,7 +71,6 @@ const generateCurrentGradeCard = (studentName: string, rollNo: string) => {
   const w = doc.internal.pageSize.getWidth();
   const sem = gradesData.semesterGPAs.length;
   const cgpa = gradesData.semesterGPAs[sem - 1].gpa;
-
   doc.setFillColor(13, 71, 161);
   doc.rect(0, 0, w, 45, "F");
   doc.setTextColor(255, 255, 255);
@@ -94,7 +81,6 @@ const generateCurrentGradeCard = (studentName: string, rollNo: string) => {
   doc.text(`Grade Card — Semester ${sem} (Current)`, w / 2, 28, { align: "center" });
   doc.setFontSize(10);
   doc.text("Mahatma Gandhi Avenue, Durgapur - 713209, West Bengal", w / 2, 38, { align: "center" });
-
   doc.setTextColor(30, 30, 30);
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
@@ -102,7 +88,6 @@ const generateCurrentGradeCard = (studentName: string, rollNo: string) => {
   doc.text(`Roll No: ${rollNo}`, 20, 66);
   doc.text(`Semester: ${sem}`, w - 80, 58);
   doc.text(`CGPA: ${cgpa}`, w - 80, 66);
-
   let y = 82;
   doc.setFillColor(240, 240, 240);
   doc.rect(20, y - 6, w - 40, 10, "F");
@@ -114,7 +99,6 @@ const generateCurrentGradeCard = (studentName: string, rollNo: string) => {
   doc.text("Score", 147, y);
   doc.text("Avg", 165, y);
   doc.text("Grade", 180, y);
-
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   gradesData.current.forEach((c) => {
@@ -130,7 +114,6 @@ const generateCurrentGradeCard = (studentName: string, rollNo: string) => {
     doc.setDrawColor(220, 220, 220);
     doc.line(20, y + 3, w - 20, y + 3);
   });
-
   y += 20;
   doc.setFillColor(13, 71, 161);
   doc.rect(20, y, w - 40, 0.5, "F");
@@ -138,14 +121,12 @@ const generateCurrentGradeCard = (studentName: string, rollNo: string) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.text(`Cumulative GPA: ${cgpa}`, 24, y);
-
   y += 25;
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(120, 120, 120);
   doc.text("This is a system-generated grade card from Nexus — NIT Durgapur Campus Portal", w / 2, y, { align: "center" });
   doc.text(`Generated on: ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`, w / 2, y + 6, { align: "center" });
-
   doc.save(`GradeCard_Sem${sem}_Current_${rollNo}.pdf`);
 };
 
@@ -165,8 +146,7 @@ const Grades = () => {
         </div>
       </div>
 
-      {/* CGPA Card */}
-      <div className="rounded-xl border border-primary/20 bg-primary/5 p-6 flex items-center justify-between">
+      <div className="scroll-reveal rounded-xl border border-primary/20 bg-primary/5 p-6 flex items-center justify-between">
         <div className="flex items-center gap-5">
           <div className="h-20 w-20 rounded-full bg-primary/10 border-4 border-primary flex items-center justify-center">
             <span className="text-2xl font-bold text-primary">{cgpa}</span>
@@ -178,9 +158,8 @@ const Grades = () => {
         </div>
       </div>
 
-      {/* GPA Trend */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <h2 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2"><Trophy className="h-4 w-4 text-nexus-amber" /> GPA Progression</h2>
+      <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
+        <h2 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2"><Trophy className="h-5 w-5 text-nexus-amber" /> GPA Progression</h2>
         <div className="flex items-end gap-3 h-32">
           {gradesData.semesterGPAs.map((sem) => (
             <div key={sem.sem} className="flex-1 flex flex-col items-center gap-1">
@@ -194,12 +173,11 @@ const Grades = () => {
         </div>
       </div>
 
-      {/* Current Semester Grades */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="scroll-reveal rounded-xl border border-border bg-card overflow-hidden">
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h2 className="text-sm font-semibold text-foreground">Current Semester (Sem {gradesData.semesterGPAs.length})</h2>
           <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => generateCurrentGradeCard(studentName, rollNo)}>
-            <Download className="h-3.5 w-3.5" /> Download Grade Card
+            <Download className="h-4 w-4" /> Download Grade Card
           </Button>
         </div>
         <div className="divide-y divide-border">
@@ -218,13 +196,12 @@ const Grades = () => {
         </div>
       </div>
 
-      {/* Previous Semesters */}
       <div className="space-y-3">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <FileText className="h-4 w-4 text-muted-foreground" /> Previous Semesters
+          <FileText className="h-5 w-5 text-muted-foreground" /> Previous Semesters
         </h2>
-        {gradesData.previousSemesters.map((sem) => (
-          <div key={sem.sem} className="rounded-xl border border-border bg-card overflow-hidden">
+        {gradesData.previousSemesters.map((sem, i) => (
+          <div key={sem.sem} className="scroll-reveal rounded-xl border border-border bg-card overflow-hidden" style={{ transitionDelay: `${i * 70}ms` }}>
             <button
               onClick={() => setExpandedSem(expandedSem === sem.sem ? null : sem.sem)}
               className="w-full p-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
@@ -245,10 +222,10 @@ const Grades = () => {
                   className="text-xs gap-1 text-muted-foreground hover:text-foreground"
                   onClick={(e) => { e.stopPropagation(); generateGradeCard(sem, studentName, rollNo); }}
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  <Download className="h-4 w-4" />
                   <span className="hidden sm:inline">Download</span>
                 </Button>
-                {expandedSem === sem.sem ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                {expandedSem === sem.sem ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
               </div>
             </button>
             <AnimatePresence>

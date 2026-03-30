@@ -14,7 +14,7 @@ const Exams = () => {
         {examsData.map((exam, i) => {
           const daysLeft = Math.ceil((new Date(exam.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
           return (
-            <div key={i} className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors">
+            <div key={i} className="scroll-reveal rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors" style={{ transitionDelay: `${i * 70}ms` }}>
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -23,15 +23,15 @@ const Exams = () => {
                   </div>
                   <h3 className="font-semibold text-foreground">{exam.subject}</h3>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {exam.date}</span>
-                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {exam.time}</span>
-                    <span className="flex items-center gap-1"><Building2 className="h-3 w-3" /> {exam.building}</span>
-                    <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {exam.room}</span>
-                    <span className="flex items-center gap-1"><Armchair className="h-3 w-3" /> {exam.seat}</span>
+                    <span className="flex items-center gap-1"><Calendar className="h-4 w-4" /> {exam.date}</span>
+                    <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> {exam.time}</span>
+                    <span className="flex items-center gap-1"><Building2 className="h-4 w-4" /> {exam.building}</span>
+                    <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {exam.room}</span>
+                    <span className="flex items-center gap-1"><Armchair className="h-4 w-4" /> {exam.seat}</span>
                   </div>
                 </div>
                 <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors self-start shrink-0">
-                  <MapPin className="h-3 w-3" /> Directions
+                  <MapPin className="h-4 w-4" /> Directions
                 </button>
               </div>
             </div>

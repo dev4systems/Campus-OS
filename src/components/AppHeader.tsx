@@ -35,8 +35,8 @@ const AppHeader = () => {
       </div>
       <div className="flex items-center gap-1">
         <ThemeToggle />
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
-          <Bell className="h-4 w-4" />
+        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative" data-tooltip="Notifications">
+          <Bell className="h-5 w-5" />
           <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary" />
         </Button>
         <div className="hidden sm:flex items-center gap-2 mr-2">
@@ -45,8 +45,8 @@ const AppHeader = () => {
           </div>
           <span className="text-sm font-medium text-foreground">{user?.name}</span>
         </div>
-        <Button variant="ghost" size="icon" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">
-          <LogOut className="h-4 w-4" />
+        <Button variant="ghost" size="icon" onClick={handleLogout} className="text-muted-foreground hover:text-destructive" data-tooltip="Logout">
+          <LogOut className="h-5 w-5" />
         </Button>
       </div>
     </header>

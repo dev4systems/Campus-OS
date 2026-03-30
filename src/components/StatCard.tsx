@@ -27,7 +27,7 @@ const iconVariants = {
 
 const StatCard = ({ title, value, subtitle, icon: Icon, variant = "default" }: StatCardProps) => {
   return (
-    <div className={`rounded-xl border p-4 sm:p-5 transition-all hover:shadow-md ${variantStyles[variant]}`}>
+    <div className={`scroll-reveal rounded-xl border p-4 sm:p-5 transition-all hover:shadow-md ${variantStyles[variant]}`}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
@@ -35,7 +35,7 @@ const StatCard = ({ title, value, subtitle, icon: Icon, variant = "default" }: S
           {subtitle && <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
         </div>
         <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${iconVariants[variant]}`}>
-          <Icon className="h-4 w-4" />
+          <Icon className="h-5 w-5" />
         </div>
       </div>
     </div>

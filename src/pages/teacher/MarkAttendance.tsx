@@ -48,7 +48,7 @@ const MarkAttendance = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="scroll-reveal rounded-xl border border-border bg-card overflow-hidden">
         <div className="divide-y divide-border">
           {teacherStudents.map((student) => (
             <label key={student.rollNo} className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/30 transition-colors">

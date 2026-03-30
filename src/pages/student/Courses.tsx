@@ -11,21 +11,21 @@ const Courses = () => {
       </div>
 
       <div className="space-y-3">
-        {coursesData.map((course) => (
-          <div key={course.code} className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors">
+        {coursesData.map((course, i) => (
+          <div key={course.code} className="scroll-reveal rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors" style={{ transitionDelay: `${i * 70}ms` }}>
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-primary" />
+                  <BookOpen className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold text-foreground">{course.name}</h3>
                 </div>
                 <p className="text-xs text-muted-foreground">{course.code} · {course.credits} Credits</p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><User className="h-3 w-3" /> {course.professor}</span>
-                  <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> Office: {course.office}</span>
+                  <span className="flex items-center gap-1"><User className="h-4 w-4" /> {course.professor}</span>
+                  <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> Office: {course.office}</span>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="text-xs shrink-0"><Download className="h-3 w-3 mr-1" /> Syllabus</Button>
+              <Button variant="outline" size="sm" className="text-xs shrink-0"><Download className="h-4 w-4 mr-1" /> Syllabus</Button>
             </div>
           </div>
         ))}

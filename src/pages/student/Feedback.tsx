@@ -37,11 +37,11 @@ const Feedback = () => {
           <h1 className="text-2xl font-bold text-foreground">Feedback & Suggestions</h1>
           <p className="text-sm text-muted-foreground">Share your thoughts and track responses</p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)} size="sm"><Plus className="h-4 w-4 mr-1" /> New Feedback</Button>
+        <Button onClick={() => setShowForm(!showForm)} size="sm"><Plus className="h-5 w-5 mr-1" /> New Feedback</Button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="scroll-reveal rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
           <h2 className="font-semibold text-foreground">✏️ Submit Feedback</h2>
           <Input placeholder="Title (brief description)" required className="bg-card" />
           <div className="grid sm:grid-cols-2 gap-4">
@@ -72,10 +72,10 @@ const Feedback = () => {
       </div>
 
       <div className="space-y-3">
-        {filtered.map((fb) => {
+        {filtered.map((fb, i) => {
           const status = statusConfig[fb.status];
           return (
-            <div key={fb.id} className="rounded-xl border border-border bg-card">
+            <div key={fb.id} className="scroll-reveal rounded-xl border border-border bg-card" style={{ transitionDelay: `${i * 70}ms` }}>
               <button onClick={() => setExpanded(expanded === fb.id ? null : fb.id)} className="w-full p-4 flex items-center justify-between text-left">
                 <div className="flex items-center gap-3">
                   <span>{status.dot}</span>
@@ -86,7 +86,7 @@ const Feedback = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs capitalize">{fb.priority}</Badge>
-                  {expanded === fb.id ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                  {expanded === fb.id ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
                 </div>
               </button>
               {expanded === fb.id && (
@@ -94,7 +94,7 @@ const Feedback = () => {
                   <p className="text-sm text-foreground">{fb.description}</p>
                   {fb.response && (
                     <div className="rounded-lg bg-status-success/5 border border-status-success/20 p-3">
-                      <p className="text-xs font-semibold text-foreground flex items-center gap-1"><MessageSquare className="h-3 w-3" /> Admin Response</p>
+                      <p className="text-xs font-semibold text-foreground flex items-center gap-1"><MessageSquare className="h-4 w-4" /> Admin Response</p>
                       <p className="text-sm text-muted-foreground mt-1">{fb.response}</p>
                     </div>
                   )}

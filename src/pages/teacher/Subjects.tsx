@@ -1,6 +1,6 @@
 import { teacherSubjects, teacherStudents } from "@/data/mockData";
 import { useState } from "react";
-import { Users, BookOpen, MapPin, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const Subjects = () => {
@@ -18,7 +18,7 @@ const Subjects = () => {
           const key = `${sub.code}-${sub.section}`;
           const isOpen = expanded === key;
           return (
-            <div key={i} className="rounded-xl border border-border bg-card">
+            <div key={i} className="scroll-reveal rounded-xl border border-border bg-card" style={{ transitionDelay: `${i * 70}ms` }}>
               <button onClick={() => setExpanded(isOpen ? null : key)} className="w-full p-5 flex items-center justify-between text-left">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -30,8 +30,8 @@ const Subjects = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge variant="secondary" className="text-xs"><Users className="h-3 w-3 mr-1" /> {sub.students}</Badge>
-                  {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                  <Badge variant="secondary" className="text-xs"><Users className="h-4 w-4 mr-1" /> {sub.students}</Badge>
+                  {isOpen ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
                 </div>
               </button>
               {isOpen && (

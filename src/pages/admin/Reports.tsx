@@ -1,4 +1,4 @@
-import { BarChart3, Download, FileBarChart } from "lucide-react";
+import { Download, FileBarChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -30,15 +30,15 @@ const Reports = () => {
 
       <div className="space-y-3">
         {reportTypes.map((r, i) => (
-          <div key={i} className="rounded-xl border border-border bg-card p-4 flex items-center justify-between hover:border-primary/30 transition-colors">
+          <div key={i} className="scroll-reveal rounded-xl border border-border bg-card p-4 flex items-center justify-between hover:border-primary/30 transition-colors" style={{ transitionDelay: `${i * 70}ms` }}>
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center"><FileBarChart className="h-4 w-4 text-primary" /></div>
+              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center"><FileBarChart className="h-5 w-5 text-primary" /></div>
               <div>
                 <p className="text-sm font-medium text-foreground">{r.name}</p>
                 <p className="text-xs text-muted-foreground">{r.desc} · {r.category}</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="text-xs"><Download className="h-3 w-3 mr-1" /> Generate</Button>
+            <Button variant="outline" size="sm" className="text-xs"><Download className="h-4 w-4 mr-1" /> Generate</Button>
           </div>
         ))}
       </div>

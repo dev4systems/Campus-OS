@@ -20,7 +20,7 @@ const Materials = () => {
         <p className="text-sm text-muted-foreground">Upload and manage study materials</p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+      <div className="scroll-reveal rounded-xl border border-border bg-card p-5 space-y-4">
         <h2 className="font-semibold text-foreground">Upload Material</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           <Select><SelectTrigger className="bg-muted/30"><SelectValue placeholder="Subject" /></SelectTrigger>
@@ -31,7 +31,7 @@ const Materials = () => {
           </Select>
         </div>
         <div className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors">
-          <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-1" />
+          <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-1" />
           <p className="text-sm text-muted-foreground">Drop files here</p>
         </div>
         <Button onClick={() => toast({ title: "Material Uploaded" })}>Upload</Button>
@@ -39,7 +39,7 @@ const Materials = () => {
 
       <div className="space-y-3">
         {materials.map((m, i) => (
-          <div key={i} className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
+          <div key={i} className="scroll-reveal rounded-xl border border-border bg-card p-4 flex items-center justify-between" style={{ transitionDelay: `${i * 70}ms` }}>
             <div className="flex items-center gap-3">
               <FileText className="h-5 w-5 text-primary shrink-0" />
               <div>
@@ -48,8 +48,8 @@ const Materials = () => {
               </div>
             </div>
             <div className="flex gap-1">
-              <Button variant="ghost" size="icon" className="h-8 w-8"><Download className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-status-danger"><Trash2 className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" data-tooltip="Download"><Download className="h-5 w-5" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-status-danger" data-tooltip="Delete"><Trash2 className="h-5 w-5" /></Button>
             </div>
           </div>
         ))}

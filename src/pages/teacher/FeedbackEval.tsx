@@ -16,7 +16,7 @@ const FeedbackEval = () => {
         <p className="text-sm text-muted-foreground">Give feedback to students</p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+      <div className="scroll-reveal rounded-xl border border-border bg-card p-5 space-y-4">
         <h2 className="font-semibold text-foreground">Individual Feedback</h2>
         <Select><SelectTrigger className="bg-muted/30"><SelectValue placeholder="Select Student" /></SelectTrigger>
           <SelectContent>{teacherStudents.map((s) => <SelectItem key={s.rollNo} value={s.rollNo}>{s.name} ({s.rollNo})</SelectItem>)}</SelectContent>
@@ -25,7 +25,7 @@ const FeedbackEval = () => {
         <Button onClick={() => { toast({ title: "Feedback Sent" }); setFeedback(""); }}>Send Feedback</Button>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-5">
+      <div className="scroll-reveal rounded-xl border border-border bg-card p-5" style={{ transitionDelay: "70ms" }}>
         <h2 className="font-semibold text-foreground mb-4">Class Performance Summary</h2>
         <div className="grid sm:grid-cols-3 gap-4 mb-4">
           <div className="text-center p-3 rounded-lg bg-muted/30">

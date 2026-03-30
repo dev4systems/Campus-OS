@@ -21,7 +21,7 @@ const Classes = () => {
 
       <div className="space-y-3">
         {classes.map((cls, i) => (
-          <div key={i} className="rounded-xl border border-border bg-card p-4 flex items-center justify-between hover:border-primary/30 transition-colors">
+          <div key={i} className="scroll-reveal rounded-xl border border-border bg-card p-4 flex items-center justify-between hover:border-primary/30 transition-colors" style={{ transitionDelay: `${i * 70}ms` }}>
             <div className="flex items-center gap-4">
               <div className="text-center min-w-[60px]">
                 <p className="text-xs font-semibold text-primary">{cls.day.slice(0, 3)}</p>
@@ -33,13 +33,13 @@ const Classes = () => {
                   <Badge variant={cls.type === "Lab" ? "secondary" : "outline"} className="text-[10px]">{cls.type}</Badge>
                 </div>
                 <div className="flex gap-3 text-xs text-muted-foreground mt-0.5">
-                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {cls.time}</span>
-                  <span className="flex items-center gap-1"><Building2 className="h-3 w-3" /> {cls.room}</span>
+                  <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> {cls.time}</span>
+                  <span className="flex items-center gap-1"><Building2 className="h-4 w-4" /> {cls.room}</span>
                 </div>
               </div>
             </div>
             <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
-              <MapPin className="h-3 w-3" /> Map
+              <MapPin className="h-4 w-4" /> Map
             </button>
           </div>
         ))}

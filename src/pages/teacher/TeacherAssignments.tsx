@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { teacherSubjects } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, FileText, Eye, Download } from "lucide-react";
+import { Plus, FileText, Eye } from "lucide-react";
 
 const TeacherAssignments = () => {
   const [showCreate, setShowCreate] = useState(false);
@@ -23,11 +23,11 @@ const TeacherAssignments = () => {
           <h1 className="text-2xl font-bold text-foreground">Assignments</h1>
           <p className="text-sm text-muted-foreground">Create and manage assignments</p>
         </div>
-        <Button onClick={() => setShowCreate(!showCreate)} size="sm"><Plus className="h-4 w-4 mr-1" /> Create</Button>
+        <Button onClick={() => setShowCreate(!showCreate)} size="sm"><Plus className="h-5 w-5 mr-1" /> Create</Button>
       </div>
 
       {showCreate && (
-        <form onSubmit={(e) => { e.preventDefault(); toast({ title: "Assignment Created" }); setShowCreate(false); }} className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
+        <form onSubmit={(e) => { e.preventDefault(); toast({ title: "Assignment Created" }); setShowCreate(false); }} className="scroll-reveal rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
           <h2 className="font-semibold text-foreground">New Assignment</h2>
           <Input placeholder="Assignment Title" required className="bg-card" />
           <Select><SelectTrigger className="bg-card"><SelectValue placeholder="Subject & Section" /></SelectTrigger>
@@ -47,7 +47,7 @@ const TeacherAssignments = () => {
 
       <div className="space-y-3">
         {existingAssignments.map((a, i) => (
-          <div key={i} className="rounded-xl border border-border bg-card p-5">
+          <div key={i} className="scroll-reveal rounded-xl border border-border bg-card p-5" style={{ transitionDelay: `${i * 70}ms` }}>
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
                 <h3 className="font-semibold text-foreground">{a.title}</h3>
@@ -58,8 +58,8 @@ const TeacherAssignments = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="text-xs"><Eye className="h-3 w-3 mr-1" /> View</Button>
-                <Button size="sm" className="text-xs"><FileText className="h-3 w-3 mr-1" /> Grade</Button>
+                <Button variant="outline" size="sm" className="text-xs"><Eye className="h-4 w-4 mr-1" /> View</Button>
+                <Button size="sm" className="text-xs"><FileText className="h-4 w-4 mr-1" /> Grade</Button>
               </div>
             </div>
           </div>

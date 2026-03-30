@@ -24,8 +24,8 @@ const Complaints = () => {
       </div>
 
       <div className="space-y-3">
-        {adminComplaints.map((c) => (
-          <div key={c.id} className="rounded-xl border border-border bg-card">
+        {adminComplaints.map((c, i) => (
+          <div key={c.id} className="scroll-reveal rounded-xl border border-border bg-card" style={{ transitionDelay: `${i * 70}ms` }}>
             <button onClick={() => setExpanded(expanded === c.id ? null : c.id)} className="w-full p-4 flex items-center justify-between text-left">
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -36,13 +36,13 @@ const Complaints = () => {
                 <p className="text-sm text-foreground">{c.description}</p>
                 <p className="text-xs text-muted-foreground mt-1">{c.from} · {c.date} · Assigned: {c.assignedTo}</p>
               </div>
-              {expanded === c.id ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
+              {expanded === c.id ? <ChevronUp className="h-5 w-5 text-muted-foreground shrink-0" /> : <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />}
             </button>
             {expanded === c.id && (
               <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
                 <Textarea placeholder="Add response or note..." rows={2} className="bg-muted/30" />
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => toast({ title: "Response sent" })}><Send className="h-3 w-3 mr-1" /> Respond</Button>
+                  <Button size="sm" onClick={() => toast({ title: "Response sent" })}><Send className="h-4 w-4 mr-1" /> Respond</Button>
                   <Button size="sm" variant="outline" onClick={() => toast({ title: "Status updated" })}>Mark Resolved</Button>
                 </div>
               </div>
