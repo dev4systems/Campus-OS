@@ -173,10 +173,10 @@ export function useAssignments(userId: string | undefined, isDemo: boolean) {
         .select("assignment_id, status, grade, feedback")
         .eq("user_id", userId!) as any;
 
-      const subMap = new Map((submissions || []).map((s: any) => [s.assignment_id, s]));
+      const subMap = new Map<string, any>((submissions || []).map((s: any) => [s.assignment_id, s]));
 
       return assignments.map((a: any) => {
-        const sub = subMap.get(a.id);
+        const sub: any = subMap.get(a.id);
         let status: "pending" | "submitted" | "overdue" = "pending";
         if (sub?.status === "submitted") status = "submitted";
         else if (new Date(a.due_date) < new Date()) status = "overdue";
