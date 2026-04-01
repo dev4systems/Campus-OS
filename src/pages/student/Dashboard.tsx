@@ -4,7 +4,8 @@ import StatCard from "@/components/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { studentStats, assignmentsData, examsData, buzzPosts, trendingTags, gradesData } from "@/data/mockData";
+import { examsData, buzzPosts, trendingTags } from "@/data/mockData";
+import { useSubjects, useDashboardStats, useAssignments, mockAssignments } from "@/hooks/useStudentData";
 
 const semesterSubjects: Record<number, { code: string; name: string; credits: number }[]> = {
   1: [{ code: "MA101", name: "Mathematics I", credits: 4 }, { code: "PH101", name: "Physics I", credits: 4 }, { code: "CS101", name: "Intro to Programming", credits: 3 }],
@@ -27,12 +28,13 @@ function deriveSemester(createdAt: string): number {
 
 const StudentDashboard = () => {
   const { user } = useAuth();
-  const [profileLoading, setProfileLoading] = useState(!user?.isDemo);
+  const isDemo = !!user?.isDemo;
+  const [profileLoading, setProfileLoading] = useState(!isDemo);
   const [maxSem, setMaxSem] = useState<number>(user?.semester || 1);
 
   useEffect(() => {
-    if (user?.isDemo) {
-      setMaxSem(user.semester || 5);
+    if (isDemo) {
+      setMaxSem(user?.semester || 5);
       setProfileLoading(false);
       return;
     }
@@ -53,7 +55,7 @@ const StudentDashboard = () => {
         }
         setProfileLoading(false);
       });
-  }, [user?.id, user?.isDemo, user?.semester]);
+  }, [user?.id, isDemo, user?.semester]);
 
   const availableSemesters = useMemo(() =>
     Array.from({ length: maxSem }, (_, i) => i + 1), [maxSem]);
@@ -73,10 +75,23 @@ const StudentDashboard = () => {
     localStorage.setItem("cc_selected_sem", String(selectedSem));
   }, [selectedSem]);
 
+  // Real data hooks
+  const { data: realSubjects, isLoading: subjectsLoading } = useSubjects(user?.id, selectedSem, isDemo);
+  const { loading: statsLoading, stats } = useDashboardStats(user?.id, isDemo);
+  const { data: realAssignments, isLoading: assignmentsLoading } = useAssignments(user?.id, isDemo);
+
+  const subjects = isDemo
+    ? (semesterSubjects[selectedSem] || [])
+    : (realSubjects || []).map(s => ({ code: s.code, name: s.name, credits: s.credits }));
+
+  // Fall back to demo subjects if no real data yet
+  const displaySubjects = subjects.length > 0 ? subjects : (semesterSubjects[selectedSem] || []);
+  const finalSubjects = isDemo ? displaySubjects : (subjectsLoading ? [] : subjects);
+
+  const assignmentsList = isDemo ? mockAssignments : (realAssignments || []);
+  const pendingAssignments = assignmentsList.filter((a) => a.status === "pending" || a.status === "overdue");
+
   const upcomingExam = examsData[0];
-  const pendingAssignments = assignmentsData.filter((a) => a.status === "pending" || a.status === "overdue");
-  const subjects = semesterSubjects[selectedSem] || [];
-  const semGPA = gradesData.semesterGPAs.find(s => s.sem === selectedSem);
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -123,28 +138,41 @@ const StudentDashboard = () => {
       <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
         <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-primary" /> Semester {selectedSem} Subjects
-          {semGPA && <span className="ml-auto text-xs text-muted-foreground">SGPA: {semGPA.gpa}</span>}
         </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {subjects.map((sub) => (
-            <div key={sub.code} className="rounded-lg border border-border bg-muted/20 p-3">
-              <p className="text-sm font-medium text-foreground">{sub.name}</p>
-              <p className="text-xs text-muted-foreground">{sub.code} · {sub.credits} Credits</p>
-            </div>
-          ))}
-        </div>
-        {subjects.length === 0 && (
+        {subjectsLoading && !isDemo ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-16 rounded-lg" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {finalSubjects.map((sub) => (
+              <div key={sub.code} className="rounded-lg border border-border bg-muted/20 p-3">
+                <p className="text-sm font-medium text-foreground">{sub.name}</p>
+                <p className="text-xs text-muted-foreground">{sub.code} · {sub.credits} Credits</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {!subjectsLoading && finalSubjects.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">No subject data available for this semester.</p>
         )}
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Attendance" value={`${studentStats.attendance}%`} icon={BarChart3} variant="primary" subtitle="Overall average" />
-        <StatCard title="CGPA" value={studentStats.cgpa} icon={Trophy} variant="success" subtitle="Current CGPA" />
-        <StatCard title="Assignments" value={studentStats.activeAssignments} icon={ClipboardList} variant="warning" subtitle="Active/pending" />
-        <StatCard title="Pending Fees" value={`₹${studentStats.pendingFees.toLocaleString()}`} icon={CreditCard} variant="danger" subtitle="Due this semester" />
-      </div>
+      {statsLoading && !isDemo ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard title="Attendance" value={`${stats.attendance}%`} icon={BarChart3} variant="primary" subtitle="Overall average" />
+          <StatCard title="CGPA" value={stats.cgpa} icon={Trophy} variant="success" subtitle="Current CGPA" />
+          <StatCard title="Assignments" value={stats.activeAssignments} icon={ClipboardList} variant="warning" subtitle="Active/pending" />
+          <StatCard title="Pending Fees" value={`₹${stats.pendingFees.toLocaleString()}`} icon={CreditCard} variant="danger" subtitle="Due this semester" />
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
@@ -162,15 +190,19 @@ const StudentDashboard = () => {
                   </div>
                 </div>
               )}
-              {pendingAssignments.map((a) => (
-                <div key={a.id} className={`flex items-start gap-3 rounded-lg p-3 ${a.status === "overdue" ? "bg-status-danger/5 border border-status-danger/20" : "bg-muted/30 border border-border"}`}>
-                  <ClipboardList className={`h-5 w-5 mt-0.5 shrink-0 ${a.status === "overdue" ? "text-status-danger" : "text-muted-foreground"}`} />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{a.title}</p>
-                    <p className="text-xs text-muted-foreground">{a.subject} · Due: {a.dueDate} {a.status === "overdue" && "· OVERDUE"}</p>
+              {assignmentsLoading && !isDemo ? (
+                <Skeleton className="h-16 rounded-lg" />
+              ) : (
+                pendingAssignments.map((a) => (
+                  <div key={a.id} className={`flex items-start gap-3 rounded-lg p-3 ${a.status === "overdue" ? "bg-status-danger/5 border border-status-danger/20" : "bg-muted/30 border border-border"}`}>
+                    <ClipboardList className={`h-5 w-5 mt-0.5 shrink-0 ${a.status === "overdue" ? "text-status-danger" : "text-muted-foreground"}`} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{a.title}</p>
+                      <p className="text-xs text-muted-foreground">{a.subject} · Due: {a.dueDate} {a.status === "overdue" && "· OVERDUE"}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 

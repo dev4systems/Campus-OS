@@ -14,6 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
+      assignment_submissions: {
+        Row: {
+          assignment_id: string
+          created_at: string
+          feedback: string | null
+          grade: string | null
+          id: string
+          status: string
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assignment_id: string
+          created_at?: string
+          feedback?: string | null
+          grade?: string | null
+          id?: string
+          status?: string
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assignment_id?: string
+          created_at?: string
+          feedback?: string | null
+          grade?: string | null
+          id?: string
+          status?: string
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_submissions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignments: {
+        Row: {
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          professor: string | null
+          subject_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          professor?: string | null
+          subject_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          professor?: string | null
+          subject_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attendance: {
+        Row: {
+          attended_classes: number
+          id: string
+          subject_id: string
+          total_classes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attended_classes?: number
+          id?: string
+          subject_id: string
+          total_classes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attended_classes?: number
+          id?: string
+          subject_id?: string
+          total_classes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bug_reports: {
         Row: {
           contact_email: string | null
@@ -50,12 +164,126 @@ export type Database = {
         }
         Relationships: []
       }
+      enrollments: {
+        Row: {
+          created_at: string
+          id: string
+          semester: number
+          subject_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          semester: number
+          subject_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          semester?: number
+          subject_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollments_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fees: {
+        Row: {
+          amount: number
+          created_at: string
+          due_date: string
+          fee_type: string
+          id: string
+          paid: number
+          status: string
+          txn_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          due_date: string
+          fee_type: string
+          id?: string
+          paid?: number
+          status?: string
+          txn_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_date?: string
+          fee_type?: string
+          id?: string
+          paid?: number
+          status?: string
+          txn_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      grades: {
+        Row: {
+          class_avg: number | null
+          created_at: string
+          grade: string
+          id: string
+          max_score: number | null
+          score: number | null
+          semester: number
+          subject_id: string
+          user_id: string
+        }
+        Insert: {
+          class_avg?: number | null
+          created_at?: string
+          grade?: string
+          id?: string
+          max_score?: number | null
+          score?: number | null
+          semester: number
+          subject_id: string
+          user_id: string
+        }
+        Update: {
+          class_avg?: number | null
+          created_at?: string
+          grade?: string
+          id?: string
+          max_score?: number | null
+          score?: number | null
+          semester?: number
+          subject_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grades_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          cgpa: number | null
           created_at: string
           department: string | null
           email: string
+          enrollment_year: number | null
           full_name: string
           id: string
           portal: string
@@ -65,9 +293,11 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          cgpa?: number | null
           created_at?: string
           department?: string | null
           email?: string
+          enrollment_year?: number | null
           full_name?: string
           id: string
           portal?: string
@@ -77,15 +307,53 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          cgpa?: number | null
           created_at?: string
           department?: string | null
           email?: string
+          enrollment_year?: number | null
           full_name?: string
           id?: string
           portal?: string
           roll_no?: string | null
           semester?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      subjects: {
+        Row: {
+          code: string
+          created_at: string
+          credits: number
+          department: string | null
+          id: string
+          name: string
+          office: string | null
+          professor: string
+          semester: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          credits?: number
+          department?: string | null
+          id?: string
+          name: string
+          office?: string | null
+          professor?: string
+          semester: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          credits?: number
+          department?: string | null
+          id?: string
+          name?: string
+          office?: string | null
+          professor?: string
+          semester?: number
         }
         Relationships: []
       }
