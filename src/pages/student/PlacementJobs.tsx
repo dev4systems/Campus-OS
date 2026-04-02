@@ -256,6 +256,9 @@ const PlacementJobs = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
+                  <Badge className={roleTypeBadgeClass(c.type)}>
+                    {roleTypeLabel(c.type)}
+                  </Badge>
                   <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20">
                     ₹{c.salary.min}–{c.salary.max} LPA
                   </Badge>
