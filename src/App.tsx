@@ -27,6 +27,7 @@ import Feedback from "./pages/student/Feedback";
 import PlacementJobs from "./pages/student/PlacementJobs";
 import AppliedJobs from "./pages/student/AppliedJobs";
 import PlacementSchedule from "./pages/student/PlacementSchedule";
+import EligibleJobs from "./pages/student/EligibleJobs";
 
 // Teacher pages
 import TeacherDashboard from "./pages/teacher/Dashboard";
