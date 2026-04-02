@@ -5,6 +5,7 @@ import {
   GraduationCap, CreditCard, FileText, Megaphone, MessageSquare,
   Users, BookMarked, Upload, FolderOpen, School, Send, Star,
   Settings, Shield, Building2, FileBarChart, Key, AlertTriangle,
+  Briefcase, ClipboardCheck, CalendarClock, ChevronDown,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
