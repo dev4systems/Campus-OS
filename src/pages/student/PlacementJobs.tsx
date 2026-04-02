@@ -147,6 +147,20 @@ const COMPANIES: Company[] = [
   },
 ];
 
+function roleTypeLabel(type: string) {
+  if (type.toLowerCase().includes("intern") && !type.toLowerCase().includes("ppo")) return "2 Month Internship";
+  if (type.toLowerCase().includes("intern") && type.toLowerCase().includes("ppo")) return "6 Month Internship + PPO";
+  if (type.toLowerCase().includes("ppo")) return "6 Month Internship + PPO";
+  return "Full Time Role";
+}
+
+function roleTypeBadgeClass(type: string) {
+  const label = roleTypeLabel(type);
+  if (label.includes("PPO")) return "bg-blue-500/15 text-blue-600 border-blue-500/20";
+  if (label.includes("2 Month")) return "bg-purple-500/15 text-purple-600 border-purple-500/20";
+  return "bg-sky-500/15 text-sky-600 border-sky-500/20";
+}
+
 const SECTORS = ["All", "Product", "Finance / Fintech", "IT Services", "Core", "Consulting"];
 const CGPA_OPTIONS = ["All", "≥6.0", "≥6.5", "≥7.0", "≥7.5", "≥8.0"];
 const BRANCHES = ["All", "CSE", "ECE", "EE", "ME", "CE"];
