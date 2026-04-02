@@ -25,6 +25,9 @@ const studentNav = [
   { title: "Grades", url: "/student/grades", icon: Star },
   { title: "Fees", url: "/student/fees", icon: CreditCard },
   { title: "Exams", url: "/student/exams", icon: FileText },
+];
+
+const studentBottomNav = [
   { title: "Campus Buzz", url: "/student/buzz", icon: Megaphone },
   { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
 ];
