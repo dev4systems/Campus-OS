@@ -142,6 +142,38 @@ const AppSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {user?.portal === "student" && (
+          <SidebarGroup>
+            <button
+              onClick={() => setPlacementsOpen(!placementsOpen)}
+              className="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
+            >
+              {!collapsed && <span className="flex items-center gap-2"><Briefcase className="h-4 w-4" />Placements</span>}
+              {collapsed && <Briefcase className="h-4 w-4 mx-auto" />}
+              {!collapsed && <ChevronDown className={`h-3.5 w-3.5 transition-transform ${placementsOpen ? "rotate-180" : ""}`} />}
+            </button>
+            {placementsOpen && (
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {placementNav.map((item, index) => (
+                    <SidebarMenuItem key={item.url} className={getItemClass()} style={getItemStyle(navItems.length + index)}>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to={item.url}
+                          className="hover:bg-muted/50"
+                          activeClassName="bg-primary/10 text-primary font-medium"
+                        >
+                          <item.icon className="h-4 w-4 mr-2 shrink-0" />
+                          {!collapsed && <span className="truncate">{item.title}</span>}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            )}
+          </SidebarGroup>
+        )}
       </SidebarContent>
       {!collapsed && (
         <SidebarFooter className="p-4">

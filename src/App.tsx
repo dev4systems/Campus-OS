@@ -104,6 +104,9 @@ const App = () => (
               <Route path="/student/exams" element={<AppLayout requiredPortal="student"><Exams /></AppLayout>} />
               <Route path="/student/buzz" element={<AppLayout requiredPortal="student"><CampusBuzz /></AppLayout>} />
               <Route path="/student/feedback" element={<AppLayout requiredPortal="student"><Feedback /></AppLayout>} />
+              <Route path="/student/placements/jobs" element={<AppLayout requiredPortal="student"><PlacementJobs /></AppLayout>} />
+              <Route path="/student/placements/applied" element={<AppLayout requiredPortal="student"><AppliedJobs /></AppLayout>} />
+              <Route path="/student/placements/schedule" element={<AppLayout requiredPortal="student"><PlacementSchedule /></AppLayout>} />
 
               {/* Teacher Portal */}
               <Route path="/teacher" element={<AppLayout requiredPortal="teacher"><TeacherDashboard /></AppLayout>} />
