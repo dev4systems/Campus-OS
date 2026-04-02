@@ -66,6 +66,7 @@ const adminNav = [
 
 const AppSidebar = () => {
   const { user } = useAuth();
+  const [placementsOpen, setPlacementsOpen] = useState(() => typeof window !== "undefined" && window.location.pathname.startsWith("/student/placements"));
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
