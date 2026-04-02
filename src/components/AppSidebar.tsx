@@ -29,6 +29,12 @@ const studentNav = [
   { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
 ];
 
+const placementNav = [
+  { title: "Jobs", url: "/student/placements/jobs", icon: Building2 },
+  { title: "Applied Jobs", url: "/student/placements/applied", icon: ClipboardCheck },
+  { title: "My Schedule", url: "/student/placements/schedule", icon: CalendarClock },
+];
+
 const teacherNav = [
   { title: "Dashboard", url: "/teacher", icon: LayoutDashboard },
   { title: "My Subjects", url: "/teacher/subjects", icon: BookMarked },
