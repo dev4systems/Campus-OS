@@ -5,6 +5,7 @@ import {
   GraduationCap, CreditCard, FileText, Megaphone, MessageSquare,
   Users, BookMarked, Upload, FolderOpen, School, Send, Star,
   Settings, Shield, Building2, FileBarChart, Key, AlertTriangle,
+  Briefcase, ClipboardCheck, CalendarClock, ChevronDown,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,6 +27,12 @@ const studentNav = [
   { title: "Exams", url: "/student/exams", icon: FileText },
   { title: "Campus Buzz", url: "/student/buzz", icon: Megaphone },
   { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
+];
+
+const placementNav = [
+  { title: "Jobs", url: "/student/placements/jobs", icon: Building2 },
+  { title: "Applied Jobs", url: "/student/placements/applied", icon: ClipboardCheck },
+  { title: "My Schedule", url: "/student/placements/schedule", icon: CalendarClock },
 ];
 
 const teacherNav = [
@@ -59,6 +66,7 @@ const adminNav = [
 
 const AppSidebar = () => {
   const { user } = useAuth();
+  const [placementsOpen, setPlacementsOpen] = useState(() => typeof window !== "undefined" && window.location.pathname.startsWith("/student/placements"));
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
@@ -134,6 +142,38 @@ const AppSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {user?.portal === "student" && (
+          <SidebarGroup>
+            <button
+              onClick={() => setPlacementsOpen(!placementsOpen)}
+              className="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
+            >
+              {!collapsed && <span className="flex items-center gap-2"><Briefcase className="h-4 w-4" />Placements</span>}
+              {collapsed && <Briefcase className="h-4 w-4 mx-auto" />}
+              {!collapsed && <ChevronDown className={`h-3.5 w-3.5 transition-transform ${placementsOpen ? "rotate-180" : ""}`} />}
+            </button>
+            {placementsOpen && (
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {placementNav.map((item, index) => (
+                    <SidebarMenuItem key={item.url} className={getItemClass()} style={getItemStyle(navItems.length + index)}>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to={item.url}
+                          className="hover:bg-muted/50"
+                          activeClassName="bg-primary/10 text-primary font-medium"
+                        >
+                          <item.icon className="h-4 w-4 mr-2 shrink-0" />
+                          {!collapsed && <span className="truncate">{item.title}</span>}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            )}
+          </SidebarGroup>
+        )}
       </SidebarContent>
       {!collapsed && (
         <SidebarFooter className="p-4">
