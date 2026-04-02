@@ -178,6 +178,28 @@ const AppSidebar = () => {
             )}
           </SidebarGroup>
         )}
+        {user?.portal === "student" && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {studentBottomNav.map((item, index) => (
+                  <SidebarMenuItem key={item.url} className={getItemClass()} style={getItemStyle(navItems.length + placementNav.length + index)}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.url}
+                        className="hover:bg-muted/50"
+                        activeClassName="bg-primary/10 text-primary font-medium"
+                      >
+                        <item.icon className="h-4 w-4 mr-2 shrink-0" />
+                        {!collapsed && <span className="truncate">{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       {!collapsed && (
         <SidebarFooter className="p-4">
