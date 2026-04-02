@@ -34,6 +34,7 @@ const studentBottomNav = [
 
 const placementNav = [
   { title: "Jobs", url: "/student/placements/jobs", icon: Building2 },
+  { title: "Eligible Jobs", url: "/student/placements/eligible", icon: Briefcase },
   { title: "Applied Jobs", url: "/student/placements/applied", icon: ClipboardCheck },
   { title: "My Schedule", url: "/student/placements/schedule", icon: CalendarClock },
 ];
