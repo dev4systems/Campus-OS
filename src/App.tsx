@@ -24,6 +24,9 @@ import Fees from "./pages/student/Fees";
 import Exams from "./pages/student/Exams";
 import CampusBuzz from "./pages/student/CampusBuzz";
 import Feedback from "./pages/student/Feedback";
+import PlacementJobs from "./pages/student/PlacementJobs";
+import AppliedJobs from "./pages/student/AppliedJobs";
+import PlacementSchedule from "./pages/student/PlacementSchedule";
 
 // Teacher pages
 import TeacherDashboard from "./pages/teacher/Dashboard";
