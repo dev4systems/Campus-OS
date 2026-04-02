@@ -25,12 +25,16 @@ const studentNav = [
   { title: "Grades", url: "/student/grades", icon: Star },
   { title: "Fees", url: "/student/fees", icon: CreditCard },
   { title: "Exams", url: "/student/exams", icon: FileText },
+];
+
+const studentBottomNav = [
   { title: "Campus Buzz", url: "/student/buzz", icon: Megaphone },
   { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
 ];
 
 const placementNav = [
   { title: "Jobs", url: "/student/placements/jobs", icon: Building2 },
+  { title: "Eligible Jobs", url: "/student/placements/eligible", icon: Briefcase },
   { title: "Applied Jobs", url: "/student/placements/applied", icon: ClipboardCheck },
   { title: "My Schedule", url: "/student/placements/schedule", icon: CalendarClock },
 ];
@@ -172,6 +176,28 @@ const AppSidebar = () => {
                 </SidebarMenu>
               </SidebarGroupContent>
             )}
+          </SidebarGroup>
+        )}
+        {user?.portal === "student" && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {studentBottomNav.map((item, index) => (
+                  <SidebarMenuItem key={item.url} className={getItemClass()} style={getItemStyle(navItems.length + placementNav.length + index)}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.url}
+                        className="hover:bg-muted/50"
+                        activeClassName="bg-primary/10 text-primary font-medium"
+                      >
+                        <item.icon className="h-4 w-4 mr-2 shrink-0" />
+                        {!collapsed && <span className="truncate">{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
           </SidebarGroup>
         )}
       </SidebarContent>

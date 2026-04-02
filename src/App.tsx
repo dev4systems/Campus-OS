@@ -27,6 +27,7 @@ import Feedback from "./pages/student/Feedback";
 import PlacementJobs from "./pages/student/PlacementJobs";
 import AppliedJobs from "./pages/student/AppliedJobs";
 import PlacementSchedule from "./pages/student/PlacementSchedule";
+import EligibleJobs from "./pages/student/EligibleJobs";
 
 // Teacher pages
 import TeacherDashboard from "./pages/teacher/Dashboard";
@@ -107,6 +108,7 @@ const App = () => (
               <Route path="/student/placements/jobs" element={<AppLayout requiredPortal="student"><PlacementJobs /></AppLayout>} />
               <Route path="/student/placements/applied" element={<AppLayout requiredPortal="student"><AppliedJobs /></AppLayout>} />
               <Route path="/student/placements/schedule" element={<AppLayout requiredPortal="student"><PlacementSchedule /></AppLayout>} />
+              <Route path="/student/placements/eligible" element={<AppLayout requiredPortal="student"><EligibleJobs /></AppLayout>} />
 
               {/* Teacher Portal */}
               <Route path="/teacher" element={<AppLayout requiredPortal="teacher"><TeacherDashboard /></AppLayout>} />
