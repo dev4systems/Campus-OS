@@ -56,9 +56,7 @@ const Assignments = () => {
           {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
-          {filter === "all" ? "No assignments available yet." : `No ${filter} assignments.`}
-        </div>
+        <EmptyState icon={ClipboardList} title="No assignments" subtitle="Check back when your professors post assignments." />
       ) : (
         <div className="space-y-3">
           {filtered.map((assignment, i) => {
