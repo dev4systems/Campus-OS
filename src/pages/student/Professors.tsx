@@ -42,11 +42,6 @@ const FALLBACK_PROFESSORS: Professor[] = [
   {"id":"p024","name":"Dr. Dilip Kumar Kisku","designation":"Associate Professor","designation_short":"Assoc. Prof.","email":"drkisku.cse@nitdgp.ac.in","phone":"+91-9732111234","joined":2014,"initials":"DK","color":"#e63946","research":["Image Processing","Medical Imaging","Communication Systems","Biometric Security"],"subjects":["Digital Image Processing","Medical Image Analysis"],"lab":"Medical Imaging Lab","profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/faculty-1"},
 ];
 
-const fuse = new Fuse(PROFESSORS, {
-  keys: ["name", "subjects", "research"],
-  threshold: 0.35,
-});
-
 const designationBadge = (d: string) => {
   if (d === "Professor" || d === "HOD") return "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300";
   if (d === "Assoc. Prof.") return "bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300";
@@ -54,21 +49,41 @@ const designationBadge = (d: string) => {
 };
 
 const Professors = () => {
+  const [professors, setProfessors] = useState<Professor[]>(FALLBACK_PROFESSORS);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [desFilter, setDesFilter] = useState("All");
   const [labOnly, setLabOnly] = useState(false);
   const [selected, setSelected] = useState<Professor | null>(null);
 
+  useEffect(() => {
+    supabase
+      .from("professors")
+      .select("id,name,designation,designation_short,email,phone,joined,initials,color,research,subjects,lab,profile_url")
+      .order("joined")
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          setProfessors(data as Professor[]);
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  const fuse = useMemo(() => new Fuse(professors, {
+    keys: ["name", "subjects", "research"],
+    threshold: 0.35,
+  }), [professors]);
+
   const filtered = useMemo(() => {
-    let list = search.trim() ? fuse.search(search).map(r => r.item) : PROFESSORS;
+    let list = search.trim() ? fuse.search(search).map(r => r.item) : professors;
     if (desFilter !== "All") {
       list = list.filter(p => p.designation_short === desFilter);
     }
     if (labOnly) list = list.filter(p => p.lab);
     return list;
-  }, [search, desFilter, labOnly]);
+  }, [search, desFilter, labOnly, professors, fuse]);
 
-  const labCount = PROFESSORS.filter(p => p.lab).length;
+  const labCount = professors.filter(p => p.lab).length;
   const currentYear = new Date().getFullYear();
 
   const copyEmail = (email: string) => {
