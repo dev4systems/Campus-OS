@@ -61,8 +61,8 @@ const Courses = () => {
                     <h3 className="font-semibold text-foreground">{course.name}</h3>
                   </div>
                   <p className="text-xs text-muted-foreground">{course.code} · {course.credits} Credits</p>
+                  <p className="text-xs text-muted-foreground">👤 {SUBJECT_PROFESSOR_MAP[course.name] || course.professor || "Faculty TBA"}</p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    {course.professor && <span className="flex items-center gap-1"><User className="h-4 w-4" /> {course.professor}</span>}
                     {course.office && <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> Office: {course.office}</span>}
                   </div>
                 </div>
