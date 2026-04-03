@@ -4,7 +4,8 @@ import { useAssignments, mockAssignments } from "@/hooks/useStudentData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Clock, Upload, Download, CheckCircle2, XCircle } from "lucide-react";
+import { Clock, Upload, Download, CheckCircle2, XCircle, ClipboardList } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 
 const statusConfig = {
   pending: { label: "Pending", icon: Clock, className: "bg-status-warning/10 text-status-warning border-status-warning/20" },
