@@ -100,7 +100,7 @@ const Professors = () => {
         </h1>
         <p className="text-sm text-muted-foreground mt-1">National Institute of Technology, Durgapur</p>
         <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
-          <span className="font-medium">{PROFESSORS.length} Professors</span>
+          <span className="font-medium">{professors.length} Professors</span>
           <span>•</span>
           <span>{labCount} with Labs</span>
           <span>•</span>

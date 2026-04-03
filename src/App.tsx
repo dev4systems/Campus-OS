@@ -90,6 +90,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollRevealObserver />
+            <ErrorBoundary>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/reset-password" element={<ResetPassword />} />
@@ -142,6 +143,7 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
