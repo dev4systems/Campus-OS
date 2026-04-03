@@ -4,6 +4,18 @@ import { BookOpen, User, MapPin, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
+const SUBJECT_PROFESSOR_MAP: Record<string, string> = {
+  "Database Management Systems": "Dr. Anuradha Acharyya / Dr. Narayan Murmu",
+  "Computer Networks": "Dr. Narayan Murmu / Dr. Sumona Mukhopadhyay",
+  "Algorithms": "Dr. Asok Sarkar",
+  "Operating Systems": "Dr. Deepsubhra Guha Roy",
+  "Machine Learning": "Dr. Mrinal Kanti Saha",
+  "Artificial Intelligence": "Dr. Atanu Dutta",
+  "Cryptography & Network Security": "Dr. Goutam Saha / Dr. Sumona Mukhopadhyay",
+  "Digital Image Processing": "Dr. Dilip Kumar Kisku / Dr. Subhasish Sadhu",
+  "Software Engineering": "Dr. Abhijit Sharma",
+};
+
 const Courses = () => {
   const { user } = useAuth();
   const isDemo = !!user?.isDemo;
