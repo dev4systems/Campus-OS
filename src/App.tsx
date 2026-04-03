@@ -20,6 +20,7 @@ import Library from "./pages/student/Library";
 import Attendance from "./pages/student/Attendance";
 import Courses from "./pages/student/Courses";
 import Grades from "./pages/student/Grades";
+import Professors from "./pages/student/Professors";
 import Fees from "./pages/student/Fees";
 import Exams from "./pages/student/Exams";
 import CampusBuzz from "./pages/student/CampusBuzz";
@@ -100,6 +101,7 @@ const App = () => (
               <Route path="/student/library" element={<AppLayout requiredPortal="student"><Library /></AppLayout>} />
               <Route path="/student/attendance" element={<AppLayout requiredPortal="student"><Attendance /></AppLayout>} />
               <Route path="/student/courses" element={<AppLayout requiredPortal="student"><Courses /></AppLayout>} />
+              <Route path="/student/professors" element={<AppLayout requiredPortal="student"><Professors /></AppLayout>} />
               <Route path="/student/grades" element={<AppLayout requiredPortal="student"><Grades /></AppLayout>} />
               <Route path="/student/fees" element={<AppLayout requiredPortal="student"><Fees /></AppLayout>} />
               <Route path="/student/exams" element={<AppLayout requiredPortal="student"><Exams /></AppLayout>} />
