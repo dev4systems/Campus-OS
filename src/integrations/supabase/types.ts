@@ -276,6 +276,54 @@ export type Database = {
           },
         ]
       }
+      professors: {
+        Row: {
+          color: string | null
+          designation: string
+          designation_short: string
+          email: string | null
+          id: string
+          initials: string | null
+          joined: number | null
+          lab: string | null
+          name: string
+          phone: string | null
+          profile_url: string | null
+          research: string[] | null
+          subjects: string[] | null
+        }
+        Insert: {
+          color?: string | null
+          designation: string
+          designation_short: string
+          email?: string | null
+          id: string
+          initials?: string | null
+          joined?: number | null
+          lab?: string | null
+          name: string
+          phone?: string | null
+          profile_url?: string | null
+          research?: string[] | null
+          subjects?: string[] | null
+        }
+        Update: {
+          color?: string | null
+          designation?: string
+          designation_short?: string
+          email?: string | null
+          id?: string
+          initials?: string | null
+          joined?: number | null
+          lab?: string | null
+          name?: string
+          phone?: string | null
+          profile_url?: string | null
+          research?: string[] | null
+          subjects?: string[] | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

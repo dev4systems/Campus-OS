@@ -2,6 +2,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAttendance, mockAttendance } from "@/hooks/useStudentData";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CalendarCheck } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 
 const statusColors = {
   good: { bg: "bg-status-success/10", text: "text-status-success", border: "border-status-success/20", badge: "🟢" },
@@ -44,9 +46,7 @@ const Attendance = () => {
           {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </>
       ) : attendanceList.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
-          No attendance data available yet.
-        </div>
+        <EmptyState icon={CalendarCheck} title="No attendance records" subtitle="Attendance will be tracked once classes begin." />
       ) : (
         <>
           <div className="scroll-reveal rounded-xl border border-border bg-card p-5 flex items-center gap-4">

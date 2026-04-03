@@ -1,7 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useGrades, mockGrades } from "@/hooks/useStudentData";
 import { gradesData } from "@/data/mockData";
-import { Trophy, Download, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { Trophy, Download, ChevronDown, ChevronUp, FileText, Award } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -147,9 +148,7 @@ const Grades = () => {
           <Skeleton className="h-64 rounded-xl" />
         </div>
       ) : currentGrades.length === 0 && semesterGPAs.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
-          No grade data available yet.
-        </div>
+        <EmptyState icon={Award} title="No grades yet" subtitle="Grades will appear after assessments are published." />
       ) : (
         <>
           <div className="scroll-reveal rounded-xl border border-primary/20 bg-primary/5 p-6 flex items-center justify-between">

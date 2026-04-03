@@ -4,7 +4,8 @@ import { useAssignments, mockAssignments } from "@/hooks/useStudentData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Clock, Upload, Download, CheckCircle2, XCircle } from "lucide-react";
+import { Clock, Upload, Download, CheckCircle2, XCircle, ClipboardList } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 
 const statusConfig = {
   pending: { label: "Pending", icon: Clock, className: "bg-status-warning/10 text-status-warning border-status-warning/20" },
@@ -56,9 +57,7 @@ const Assignments = () => {
           {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
-          {filter === "all" ? "No assignments available yet." : `No ${filter} assignments.`}
-        </div>
+        <EmptyState icon={ClipboardList} title="No assignments" subtitle="Check back when your professors post assignments." />
       ) : (
         <div className="space-y-3">
           {filtered.map((assignment, i) => {

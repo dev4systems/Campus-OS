@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check } from "lucide-react";
+import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check, LayoutDashboard } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 import StatCard from "@/components/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -156,7 +157,7 @@ const StudentDashboard = () => {
           </div>
         )}
         {!subjectsLoading && finalSubjects.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-4">No subject data available for this semester.</p>
+          <EmptyState icon={LayoutDashboard} title="No data yet" subtitle="Your academic data will appear here once enrolled." />
         )}
       </div>
 

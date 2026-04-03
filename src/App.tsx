@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -89,6 +90,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollRevealObserver />
+            <ErrorBoundary>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/reset-password" element={<ResetPassword />} />
@@ -141,6 +143,7 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

@@ -1,6 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
 import { GraduationCap, Mail, CalendarDays, FlaskConical, ExternalLink, Search, Phone, BookOpen, Copy, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +15,7 @@ interface Professor {
   research: string[]; subjects: string[]; lab: string | null; profile_url: string;
 }
 
-const PROFESSORS: Professor[] = [
+const FALLBACK_PROFESSORS: Professor[] = [
   {"id":"p001","name":"Prof. Tanmay De","designation":"Professor & HOD","designation_short":"HOD","email":"hod.cse@nitdgp.ac.in","phone":"+91-9434788123","joined":1998,"initials":"TD","color":"#1a3a5c","research":["Optical Networks","Delay Tolerant Networks","Wireless Sensor Networks"],"subjects":["Computer Networks","Advanced Networking"],"lab":null,"profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/hod-2"},
   {"id":"p002","name":"Dr. Asok Sarkar","designation":"Associate Professor","designation_short":"Assoc. Prof.","email":"asarkar.cse@nitdgp.ac.in","phone":"+91-9434002205","joined":2000,"initials":"AS","color":"#2d6a4f","research":["Design & Analysis of Algorithms","Computational Theory","Graph Theory"],"subjects":["Design & Analysis of Algorithms","Theory of Computation"],"lab":null,"profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/faculty-1"},
   {"id":"p003","name":"Dr. Atanu Dutta","designation":"Associate Professor","designation_short":"Assoc. Prof.","email":"adutta.cse@nitdgp.ac.in","phone":"+91-9434788180","joined":2007,"initials":"AD","color":"#6a0572","research":["Agentic AI","LLM Multi-agent Systems","Natural Language Processing"],"subjects":["Artificial Intelligence","Machine Learning"],"lab":"AI/ML Research Lab","profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/faculty-1"},
@@ -40,11 +42,6 @@ const PROFESSORS: Professor[] = [
   {"id":"p024","name":"Dr. Dilip Kumar Kisku","designation":"Associate Professor","designation_short":"Assoc. Prof.","email":"drkisku.cse@nitdgp.ac.in","phone":"+91-9732111234","joined":2014,"initials":"DK","color":"#e63946","research":["Image Processing","Medical Imaging","Communication Systems","Biometric Security"],"subjects":["Digital Image Processing","Medical Image Analysis"],"lab":"Medical Imaging Lab","profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/faculty-1"},
 ];
 
-const fuse = new Fuse(PROFESSORS, {
-  keys: ["name", "subjects", "research"],
-  threshold: 0.35,
-});
-
 const designationBadge = (d: string) => {
   if (d === "Professor" || d === "HOD") return "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300";
   if (d === "Assoc. Prof.") return "bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300";
@@ -52,21 +49,41 @@ const designationBadge = (d: string) => {
 };
 
 const Professors = () => {
+  const [professors, setProfessors] = useState<Professor[]>(FALLBACK_PROFESSORS);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [desFilter, setDesFilter] = useState("All");
   const [labOnly, setLabOnly] = useState(false);
   const [selected, setSelected] = useState<Professor | null>(null);
 
+  useEffect(() => {
+    supabase
+      .from("professors")
+      .select("id,name,designation,designation_short,email,phone,joined,initials,color,research,subjects,lab,profile_url")
+      .order("joined")
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          setProfessors(data as Professor[]);
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  const fuse = useMemo(() => new Fuse(professors, {
+    keys: ["name", "subjects", "research"],
+    threshold: 0.35,
+  }), [professors]);
+
   const filtered = useMemo(() => {
-    let list = search.trim() ? fuse.search(search).map(r => r.item) : PROFESSORS;
+    let list = search.trim() ? fuse.search(search).map(r => r.item) : professors;
     if (desFilter !== "All") {
       list = list.filter(p => p.designation_short === desFilter);
     }
     if (labOnly) list = list.filter(p => p.lab);
     return list;
-  }, [search, desFilter, labOnly]);
+  }, [search, desFilter, labOnly, professors, fuse]);
 
-  const labCount = PROFESSORS.filter(p => p.lab).length;
+  const labCount = professors.filter(p => p.lab).length;
   const currentYear = new Date().getFullYear();
 
   const copyEmail = (email: string) => {
@@ -83,7 +100,7 @@ const Professors = () => {
         </h1>
         <p className="text-sm text-muted-foreground mt-1">National Institute of Technology, Durgapur</p>
         <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
-          <span className="font-medium">{PROFESSORS.length} Professors</span>
+          <span className="font-medium">{professors.length} Professors</span>
           <span>•</span>
           <span>{labCount} with Labs</span>
           <span>•</span>
@@ -108,7 +125,11 @@ const Professors = () => {
       </div>
 
       {/* Cards grid */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-56 rounded-xl" />)}
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">No professors match your filters.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

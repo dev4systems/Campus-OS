@@ -1,6 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useFees, mockFees } from "@/hooks/useStudentData";
-import { CheckCircle2, Clock, Download } from "lucide-react";
+import { CheckCircle2, Clock, Download, Receipt } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -43,9 +44,7 @@ const Fees = () => {
           </div>
         </>
       ) : feesList.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
-          No fee records available yet.
-        </div>
+        <EmptyState icon={Receipt} title="No fee records" subtitle="Your fee details will appear here once generated." />
       ) : (
         <>
           <div className="grid sm:grid-cols-3 gap-4">
