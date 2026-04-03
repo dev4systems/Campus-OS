@@ -157,7 +157,7 @@ const StudentDashboard = () => {
           </div>
         )}
         {!subjectsLoading && finalSubjects.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-4">No subject data available for this semester.</p>
+          <EmptyState icon={LayoutDashboard} title="No data yet" subtitle="Your academic data will appear here once enrolled." />
         )}
       </div>
 
