@@ -20,6 +20,7 @@ import Library from "./pages/student/Library";
 import Attendance from "./pages/student/Attendance";
 import Courses from "./pages/student/Courses";
 import Grades from "./pages/student/Grades";
+import Professors from "./pages/student/Professors";
 import Fees from "./pages/student/Fees";
 import Exams from "./pages/student/Exams";
 import CampusBuzz from "./pages/student/CampusBuzz";

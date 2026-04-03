@@ -18,13 +18,13 @@ const studentNav = [
   { title: "Dashboard", url: "/student", icon: LayoutDashboard },
   { title: "Timetable", url: "/student/timetable", icon: Calendar },
   { title: "Assignments", url: "/student/assignments", icon: ClipboardList },
-  { title: "Campus Map", url: "/student/campus-nav", icon: MapPin },
-  { title: "Library", url: "/student/library", icon: BookOpen },
-  { title: "Attendance", url: "/student/attendance", icon: BarChart3 },
-  { title: "Courses", url: "/student/courses", icon: GraduationCap },
-  { title: "Grades", url: "/student/grades", icon: Star },
-  { title: "Fees", url: "/student/fees", icon: CreditCard },
   { title: "Exams", url: "/student/exams", icon: FileText },
+  { title: "Professors", url: "/student/professors", icon: GraduationCap },
+  { title: "Courses", url: "/student/courses", icon: BookMarked },
+  { title: "Attendance", url: "/student/attendance", icon: BarChart3 },
+  { title: "Fees", url: "/student/fees", icon: CreditCard },
+  { title: "Library", url: "/student/library", icon: BookOpen },
+  { title: "Campus Navigation", url: "/student/campus-nav", icon: MapPin },
 ];
 
 const studentBottomNav = [
