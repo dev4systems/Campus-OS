@@ -1,6 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
 import { GraduationCap, Mail, CalendarDays, FlaskConical, ExternalLink, Search, Phone, BookOpen, Copy, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
