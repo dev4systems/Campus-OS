@@ -44,9 +44,7 @@ const Attendance = () => {
           {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </>
       ) : attendanceList.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
-          No attendance data available yet.
-        </div>
+        <EmptyState icon={CalendarCheck} title="No attendance records" subtitle="Attendance will be tracked once classes begin." />
       ) : (
         <>
           <div className="scroll-reveal rounded-xl border border-border bg-card p-5 flex items-center gap-4">
