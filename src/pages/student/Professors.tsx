@@ -15,7 +15,7 @@ interface Professor {
   research: string[]; subjects: string[]; lab: string | null; profile_url: string;
 }
 
-const PROFESSORS: Professor[] = [
+const FALLBACK_PROFESSORS: Professor[] = [
   {"id":"p001","name":"Prof. Tanmay De","designation":"Professor & HOD","designation_short":"HOD","email":"hod.cse@nitdgp.ac.in","phone":"+91-9434788123","joined":1998,"initials":"TD","color":"#1a3a5c","research":["Optical Networks","Delay Tolerant Networks","Wireless Sensor Networks"],"subjects":["Computer Networks","Advanced Networking"],"lab":null,"profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/hod-2"},
   {"id":"p002","name":"Dr. Asok Sarkar","designation":"Associate Professor","designation_short":"Assoc. Prof.","email":"asarkar.cse@nitdgp.ac.in","phone":"+91-9434002205","joined":2000,"initials":"AS","color":"#2d6a4f","research":["Design & Analysis of Algorithms","Computational Theory","Graph Theory"],"subjects":["Design & Analysis of Algorithms","Theory of Computation"],"lab":null,"profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/faculty-1"},
   {"id":"p003","name":"Dr. Atanu Dutta","designation":"Associate Professor","designation_short":"Assoc. Prof.","email":"adutta.cse@nitdgp.ac.in","phone":"+91-9434788180","joined":2007,"initials":"AD","color":"#6a0572","research":["Agentic AI","LLM Multi-agent Systems","Natural Language Processing"],"subjects":["Artificial Intelligence","Machine Learning"],"lab":"AI/ML Research Lab","profile_url":"https://nitdgp.ac.in/department/computer-science-engineering/faculty-1"},
