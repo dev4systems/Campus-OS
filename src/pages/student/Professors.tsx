@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
-import { GraduationCap, Mail, CalendarDays, FlaskConical, ExternalLink, Search, Phone, BookOpen, Copy, X } from "lucide-react";
+import { GraduationCap, Mail, CalendarDays, FlaskConical, ExternalLink, Search, Phone, BookOpen, Copy, X, SlidersHorizontal, UserCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface Professor {
@@ -48,12 +49,39 @@ const designationBadge = (d: string) => {
   return "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300";
 };
 
+const YEAR_KEYWORDS: Record<string, string[]> = {
+  "1st Year": ["Programming", "Mathematics", "Physics", "Chemistry", "Engineering Drawing"],
+  "2nd Year": ["Data Structures", "Digital Electronics", "Discrete", "Computer Organisation"],
+  "3rd Year": ["Algorithms", "Operating Systems", "Computer Networks", "DBMS", "Software Engineering"],
+  "4th Year": ["Machine Learning", "Deep Learning", "Cryptography", "NLP", "Computer Vision", "Distributed"],
+};
+
+const MY_SUBJECTS = [
+  "Data Structures & Algorithms", "Operating Systems", "Computer Networks",
+  "Database Management Systems", "Software Engineering",
+];
+
+const matchesYear = (prof: Professor, year: string): boolean => {
+  const keywords = YEAR_KEYWORDS[year];
+  if (!keywords) return true;
+  return prof.subjects.some(s => keywords.some(k => s.toLowerCase().includes(k.toLowerCase())));
+};
+
+const matchesMySubjects = (prof: Professor): boolean => {
+  return prof.subjects.some(s => MY_SUBJECTS.some(ms => s.toLowerCase().includes(ms.toLowerCase()) || ms.toLowerCase().includes(s.toLowerCase())));
+};
+
 const Professors = () => {
   const [professors, setProfessors] = useState<Professor[]>(FALLBACK_PROFESSORS);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [desFilter, setDesFilter] = useState("All");
+  const [deptFilter, setDeptFilter] = useState("All");
+  const [yearFilter, setYearFilter] = useState("All Years");
+  const [expFilter, setExpFilter] = useState("Any");
   const [labOnly, setLabOnly] = useState(false);
+  const [teachingMe, setTeachingMe] = useState(false);
+  const [sortBy, setSortBy] = useState("senior");
   const [selected, setSelected] = useState<Professor | null>(null);
 
   useEffect(() => {
@@ -75,16 +103,57 @@ const Professors = () => {
   }), [professors]);
 
   const filtered = useMemo(() => {
-    let list = search.trim() ? fuse.search(search).map(r => r.item) : professors;
+    let list = search.trim() ? fuse.search(search).map(r => r.item) : [...professors];
+
     if (desFilter !== "All") {
       list = list.filter(p => p.designation_short === desFilter);
     }
+    if (deptFilter !== "All") {
+      // All profs are CSE for now, so non-CSE returns empty
+      if (deptFilter !== "CSE") list = [];
+    }
+    if (yearFilter !== "All Years") {
+      list = list.filter(p => matchesYear(p, yearFilter));
+    }
+    if (expFilter !== "Any") {
+      list = list.filter(p => {
+        const exp = 2026 - p.joined;
+        if (expFilter === "<5") return exp < 5;
+        if (expFilter === "5-10") return exp >= 5 && exp <= 10;
+        if (expFilter === "10-20") return exp > 10 && exp <= 20;
+        if (expFilter === "20+") return exp > 20;
+        return true;
+      });
+    }
     if (labOnly) list = list.filter(p => p.lab);
+    if (teachingMe) list = list.filter(matchesMySubjects);
+
+    // Sort
+    list.sort((a, b) => {
+      if (sortBy === "senior") return a.joined - b.joined;
+      if (sortBy === "junior") return b.joined - a.joined;
+      if (sortBy === "az") return a.name.localeCompare(b.name);
+      if (sortBy === "designation") {
+        const order: Record<string, number> = { "HOD": 0, "Professor": 1, "Assoc. Prof.": 2, "Asst. Prof.": 3 };
+        return (order[a.designation_short] ?? 9) - (order[b.designation_short] ?? 9);
+      }
+      return 0;
+    });
+
     return list;
-  }, [search, desFilter, labOnly, professors, fuse]);
+  }, [search, desFilter, deptFilter, yearFilter, expFilter, labOnly, teachingMe, sortBy, professors, fuse]);
 
   const labCount = professors.filter(p => p.lab).length;
   const currentYear = new Date().getFullYear();
+
+  const activeFilterCount = [
+    desFilter !== "All",
+    deptFilter !== "All",
+    yearFilter !== "All Years",
+    expFilter !== "Any",
+    labOnly,
+    teachingMe,
+  ].filter(Boolean).length;
 
   const copyEmail = (email: string) => {
     navigator.clipboard.writeText(email);
@@ -109,19 +178,83 @@ const Professors = () => {
       </div>
 
       {/* Filter bar */}
-      <div className="scroll-reveal flex flex-wrap items-center gap-3" style={{ transitionDelay: "70ms" }}>
-        <div className="relative flex-1 min-w-[180px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search name, subject, research…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-sm" />
+      <div className="scroll-reveal space-y-3" style={{ transitionDelay: "70ms" }}>
+        {/* Row 1: Search + Department pills */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[180px] max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search name, subject, research…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-sm" />
+          </div>
+          {["All", "CSE", "ECE", "EE", "ME"].map(d => (
+            <button key={d} onClick={() => setDeptFilter(d)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${deptFilter === d ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/40"}`}
+            >{d}</button>
+          ))}
         </div>
-        {["All", "Professor", "Assoc. Prof.", "Asst. Prof."].map(d => (
-          <button key={d} onClick={() => setDesFilter(d)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${desFilter === d ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/40"}`}
-          >{d}</button>
-        ))}
-        <button onClick={() => setLabOnly(!labOnly)}
-          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors flex items-center gap-1 ${labOnly ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700" : "bg-card text-muted-foreground border-border hover:border-primary/40"}`}
-        ><FlaskConical className="h-3.5 w-3.5" /> Has Lab</button>
+
+        {/* Row 2: Designation pills + filters + sort */}
+        <div className="flex flex-wrap items-center gap-3">
+          {["All", "Professor", "Assoc. Prof.", "Asst. Prof."].map(d => (
+            <button key={d} onClick={() => setDesFilter(d)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${desFilter === d ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/40"}`}
+            >{d === "All" ? "All Designations" : d}</button>
+          ))}
+
+          <Select value={yearFilter} onValueChange={setYearFilter}>
+            <SelectTrigger className="h-8 w-[130px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {["All Years", "1st Year", "2nd Year", "3rd Year", "4th Year"].map(y => (
+                <SelectItem key={y} value={y} className="text-xs">{y}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={expFilter} onValueChange={setExpFilter}>
+            <SelectTrigger className="h-8 w-[120px] text-xs">
+              <SelectValue placeholder="Experience" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Any" className="text-xs">Any Exp.</SelectItem>
+              <SelectItem value="<5" className="text-xs">&lt;5 years</SelectItem>
+              <SelectItem value="5-10" className="text-xs">5–10 years</SelectItem>
+              <SelectItem value="10-20" className="text-xs">10–20 years</SelectItem>
+              <SelectItem value="20+" className="text-xs">20+ years</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <button onClick={() => setLabOnly(!labOnly)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors flex items-center gap-1 ${labOnly ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700" : "bg-card text-muted-foreground border-border hover:border-primary/40"}`}
+          ><FlaskConical className="h-3.5 w-3.5" /> Has Lab</button>
+
+          <button onClick={() => setTeachingMe(!teachingMe)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors flex items-center gap-1 ${teachingMe ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/40"}`}
+          ><UserCheck className="h-3.5 w-3.5" /> Teaching Me</button>
+
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="h-8 w-[140px] text-xs ml-auto">
+              <SlidersHorizontal className="h-3.5 w-3.5 mr-1" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="senior" className="text-xs">Most Senior</SelectItem>
+              <SelectItem value="junior" className="text-xs">Most Junior</SelectItem>
+              <SelectItem value="az" className="text-xs">A–Z Name</SelectItem>
+              <SelectItem value="designation" className="text-xs">By Designation</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Active filter count + result count */}
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="font-medium">{filtered.length} professor{filtered.length !== 1 ? "s" : ""} found</span>
+          {activeFilterCount > 0 && (
+            <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
+              {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""} active
+            </Badge>
+          )}
+        </div>
       </div>
 
       {/* Cards grid */}
@@ -130,7 +263,11 @@ const Professors = () => {
           {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-56 rounded-xl" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">No professors match your filters.</div>
+        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
+          {deptFilter !== "All" && deptFilter !== "CSE"
+            ? "No faculty from this department added yet."
+            : "No professors match your filters."}
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((p, i) => (
