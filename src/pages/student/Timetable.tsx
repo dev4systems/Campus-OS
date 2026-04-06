@@ -1,13 +1,42 @@
 import { useState } from "react";
 import { timetableData } from "@/data/mockData";
-import { MapPin, Clock, User, Building2 } from "lucide-react";
+import { MapPin, Clock, User, Building2, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useDirections } from "@/contexts/DirectionsContext";
+
+const ROOM_COORDS: Record<string, { lat: number; lng: number }> = {
+  "MAB":      { lat: 23.5432, lng: 87.2934 },
+  "NAB":      { lat: 23.5435, lng: 87.2940 },
+  "CSE Dept": { lat: 23.5428, lng: 87.2948 },
+  "CC":       { lat: 23.5430, lng: 87.2955 },
+  "LH-101":   { lat: 23.5432, lng: 87.2934 },
+  "LH-201":   { lat: 23.5432, lng: 87.2934 },
+  "LH-203":   { lat: 23.5432, lng: 87.2934 },
+  "LH-105":   { lat: 23.5432, lng: 87.2934 },
+  "LH-301":   { lat: 23.5432, lng: 87.2934 },
+  "LH-202":   { lat: 23.5432, lng: 87.2934 },
+  "LH-204":   { lat: 23.5432, lng: 87.2934 },
+  "CC-Lab 1":  { lat: 23.5430, lng: 87.2955 },
+  "CC-Lab 2":  { lat: 23.5430, lng: 87.2955 },
+  "CC-Lab 3":  { lat: 23.5430, lng: 87.2955 },
+  "Lecture Hall Complex": { lat: 23.5432, lng: 87.2934 },
+  "Computer Centre":      { lat: 23.5430, lng: 87.2955 },
+};
 
 const Timetable = () => {
   const days = timetableData.map((d) => d.day);
   const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
   const [selectedDay, setSelectedDay] = useState(days.includes(today) ? today : days[0]);
   const dayData = timetableData.find((d) => d.day === selectedDay);
+  const { requestDirections } = useDirections();
+
+  const handleDirections = (room: string, building: string) => {
+    const label = `${room} · ${building}`;
+    const key = Object.keys(ROOM_COORDS).find(k => room.includes(k) || building.includes(k));
+    if (key) {
+      requestDirections({ name: label, ...ROOM_COORDS[key] });
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -48,8 +77,11 @@ const Timetable = () => {
                   <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {slot.room}</span>
                 </div>
               </div>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors self-start">
-                <MapPin className="h-4 w-4" /> Directions
+              <button
+                onClick={() => handleDirections(slot.room, slot.building)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors self-start"
+              >
+                <Navigation className="h-4 w-4" /> Directions
               </button>
             </div>
           </div>
