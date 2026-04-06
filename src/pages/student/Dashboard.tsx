@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check, LayoutDashboard } from "lucide-react";
+import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check, LayoutDashboard, CalendarX, AlertCircle, Receipt, CheckCircle2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
 import StatCard from "@/components/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { examsData, buzzPosts, trendingTags } from "@/data/mockData";
-import { useSubjects, useDashboardStats, useAssignments, mockAssignments } from "@/hooks/useStudentData";
+import { useSubjects, useDashboardStats, useAssignments, useFees, mockAssignments, mockFees } from "@/hooks/useStudentData";
 
 const semesterSubjects: Record<number, { code: string; name: string; credits: number }[]> = {
   1: [{ code: "MA101", name: "Mathematics I", credits: 4 }, { code: "PH101", name: "Physics I", credits: 4 }, { code: "CS101", name: "Intro to Programming", credits: 3 }],
@@ -26,6 +26,103 @@ function deriveSemester(createdAt: string): number {
   const sem = yearDiff * 2 + (now.getMonth() >= 6 ? 1 : 0);
   return Math.max(1, Math.min(sem, 8));
 }
+
+/* ── Alert types ─────────────────────────────────── */
+interface QuickAlert {
+  id: string;
+  type: "exam" | "assignment" | "fee";
+  title: string;
+  subtitle: string;
+  dateStr: string;
+  urgency: "overdue" | "urgent" | "normal"; // red, amber, blue
+  daysAway: number; // negative = overdue
+}
+
+function buildAlerts(
+  isDemo: boolean,
+  assignmentsList: { id: string | number; title: string; subject: string; dueDate: string; status: string }[],
+  feesList: { type: string; amount: number; paid: number; status: string; dueDate: string }[],
+): QuickAlert[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const alerts: QuickAlert[] = [];
+
+  // A) Upcoming exams within 14 days
+  for (const exam of examsData) {
+    const examDate = new Date(exam.date);
+    const diff = Math.ceil((examDate.getTime() - today.getTime()) / 86400000);
+    if (diff >= -1 && diff <= 14) {
+      alerts.push({
+        id: `exam-${exam.subject}`,
+        type: "exam",
+        title: `${exam.type}: ${exam.subject}`,
+        subtitle: `${exam.time} · ${exam.room}`,
+        dateStr: exam.date,
+        urgency: diff <= 2 ? "urgent" : "normal",
+        daysAway: diff,
+      });
+    }
+  }
+
+  // B) Overdue assignments
+  for (const a of assignmentsList) {
+    if (a.status === "overdue" || (a.status === "pending" && new Date(a.dueDate) < today)) {
+      const diff = Math.ceil((new Date(a.dueDate).getTime() - today.getTime()) / 86400000);
+      alerts.push({
+        id: `asgn-${a.id}`,
+        type: "assignment",
+        title: a.title,
+        subtitle: `${a.subject} · OVERDUE`,
+        dateStr: a.dueDate,
+        urgency: "overdue",
+        daysAway: diff,
+      });
+    } else if (a.status === "pending") {
+      const diff = Math.ceil((new Date(a.dueDate).getTime() - today.getTime()) / 86400000);
+      if (diff <= 7) {
+        alerts.push({
+          id: `asgn-${a.id}`,
+          type: "assignment",
+          title: a.title,
+          subtitle: `${a.subject} · Due in ${diff} day${diff !== 1 ? "s" : ""}`,
+          dateStr: a.dueDate,
+          urgency: diff <= 2 ? "urgent" : "normal",
+          daysAway: diff,
+        });
+      }
+    }
+  }
+
+  // C) Unpaid fees within 30 days
+  for (const f of feesList) {
+    if (f.status === "pending" || f.amount - f.paid > 0) {
+      const diff = Math.ceil((new Date(f.dueDate).getTime() - today.getTime()) / 86400000);
+      if (diff <= 30) {
+        alerts.push({
+          id: `fee-${f.type}`,
+          type: "fee",
+          title: `${f.type}: ₹${(f.amount - f.paid).toLocaleString()} due`,
+          subtitle: diff < 0 ? "OVERDUE" : `Due in ${diff} day${diff !== 1 ? "s" : ""}`,
+          dateStr: f.dueDate,
+          urgency: diff < 0 ? "overdue" : diff <= 7 ? "urgent" : "normal",
+          daysAway: diff,
+        });
+      }
+    }
+  }
+
+  // Sort: most urgent first (overdue by most days, then soonest)
+  alerts.sort((a, b) => a.daysAway - b.daysAway);
+  return alerts;
+}
+
+const ALERT_STYLES: Record<string, { border: string; bg: string; iconColor: string }> = {
+  overdue: { border: "border-l-4 border-l-status-danger", bg: "bg-status-danger/5", iconColor: "text-status-danger" },
+  urgent: { border: "border-l-4 border-l-status-warning", bg: "bg-status-warning/5", iconColor: "text-status-warning" },
+  normal: { border: "border-l-4 border-l-primary", bg: "bg-primary/5", iconColor: "text-primary" },
+};
+
+const ALERT_ICONS = { exam: CalendarX, assignment: AlertCircle, fee: Receipt };
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -80,19 +177,27 @@ const StudentDashboard = () => {
   const { data: realSubjects, isLoading: subjectsLoading } = useSubjects(user?.id, selectedSem, isDemo);
   const { loading: statsLoading, stats } = useDashboardStats(user?.id, isDemo);
   const { data: realAssignments, isLoading: assignmentsLoading } = useAssignments(user?.id, isDemo);
+  const { data: realFees, isLoading: feesLoading } = useFees(user?.id, isDemo);
 
   const subjects = isDemo
     ? (semesterSubjects[selectedSem] || [])
     : (realSubjects || []).map(s => ({ code: s.code, name: s.name, credits: s.credits }));
 
-  // Fall back to demo subjects if no real data yet
   const displaySubjects = subjects.length > 0 ? subjects : (semesterSubjects[selectedSem] || []);
   const finalSubjects = isDemo ? displaySubjects : (subjectsLoading ? [] : subjects);
 
   const assignmentsList = isDemo ? mockAssignments : (realAssignments || []);
-  const pendingAssignments = assignmentsList.filter((a) => a.status === "pending" || a.status === "overdue");
+  const feesList = isDemo ? mockFees : (realFees || []);
 
-  const upcomingExam = examsData[0];
+  // Quick alerts
+  const alertsLoading = !isDemo && (assignmentsLoading || feesLoading);
+  const alerts = useMemo(() => buildAlerts(isDemo, assignmentsList, feesList), [isDemo, assignmentsList, feesList]);
+  const [showAllAlerts, setShowAllAlerts] = useState(false);
+  const visibleAlerts = showAllAlerts ? alerts : alerts.slice(0, 5);
+
+  // Stat display helpers
+  const fmtStat = (val: number | undefined | null, fallback: string = "--") =>
+    val !== undefined && val !== null ? val : fallback;
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -168,43 +273,55 @@ const StudentDashboard = () => {
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard title="Attendance" value={`${stats.attendance}%`} icon={BarChart3} variant="primary" subtitle="Overall average" />
-          <StatCard title="CGPA" value={stats.cgpa} icon={Trophy} variant="success" subtitle="Current CGPA" />
-          <StatCard title="Assignments" value={stats.activeAssignments} icon={ClipboardList} variant="warning" subtitle="Active/pending" />
-          <StatCard title="Pending Fees" value={`₹${stats.pendingFees.toLocaleString()}`} icon={CreditCard} variant="danger" subtitle="Due this semester" />
+          <StatCard title="Attendance" value={stats?.attendance != null ? `${stats.attendance}%` : "--"} icon={BarChart3} variant="primary" subtitle="Overall average" />
+          <StatCard title="CGPA" value={fmtStat(stats?.cgpa)} icon={Trophy} variant="success" subtitle="Current CGPA" />
+          <StatCard title="Assignments" value={fmtStat(stats?.activeAssignments)} icon={ClipboardList} variant="warning" subtitle="Active/pending" />
+          <StatCard title="Pending Fees" value={stats?.pendingFees != null ? `₹${stats.pendingFees.toLocaleString()}` : "--"} icon={CreditCard} variant="danger" subtitle="Due this semester" />
         </div>
       )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
+          {/* Quick Alerts */}
           <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
               <Bell className="h-5 w-5 text-primary" /> Quick Alerts
+              {alerts.length > 0 && (
+                <span className="ml-auto text-xs font-medium px-2 py-0.5 rounded-full bg-status-danger/10 text-status-danger">{alerts.length}</span>
+              )}
             </h2>
-            <div className="space-y-3">
-              {upcomingExam && (
-                <div className="flex items-start gap-3 rounded-lg bg-status-warning/5 border border-status-warning/20 p-3">
-                  <Calendar className="h-5 w-5 text-status-warning mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{upcomingExam.type}: {upcomingExam.subject}</p>
-                    <p className="text-xs text-muted-foreground">{upcomingExam.date} · {upcomingExam.time} · {upcomingExam.room}</p>
-                  </div>
-                </div>
-              )}
-              {assignmentsLoading && !isDemo ? (
-                <Skeleton className="h-16 rounded-lg" />
-              ) : (
-                pendingAssignments.map((a) => (
-                  <div key={a.id} className={`flex items-start gap-3 rounded-lg p-3 ${a.status === "overdue" ? "bg-status-danger/5 border border-status-danger/20" : "bg-muted/30 border border-border"}`}>
-                    <ClipboardList className={`h-5 w-5 mt-0.5 shrink-0 ${a.status === "overdue" ? "text-status-danger" : "text-muted-foreground"}`} />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{a.title}</p>
-                      <p className="text-xs text-muted-foreground">{a.subject} · Due: {a.dueDate} {a.status === "overdue" && "· OVERDUE"}</p>
+
+            {alertsLoading ? (
+              <div className="space-y-3">
+                {[1, 2].map(i => <Skeleton key={i} className="h-16 rounded-lg" />)}
+              </div>
+            ) : alerts.length === 0 ? (
+              <EmptyState icon={CheckCircle2} title="You're all caught up!" subtitle="No urgent alerts right now. Keep up the good work!" />
+            ) : (
+              <div className="space-y-3">
+                {visibleAlerts.map((alert) => {
+                  const style = ALERT_STYLES[alert.urgency];
+                  const Icon = ALERT_ICONS[alert.type];
+                  return (
+                    <div key={alert.id} className={`flex items-start gap-3 rounded-lg p-3 ${style.bg} ${style.border}`}>
+                      <Icon className={`h-5 w-5 mt-0.5 shrink-0 ${style.iconColor}`} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                        <p className="text-xs text-muted-foreground">{alert.subtitle} · {alert.dateStr}</p>
+                      </div>
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  );
+                })}
+                {alerts.length > 5 && (
+                  <button
+                    onClick={() => setShowAllAlerts(!showAllAlerts)}
+                    className="text-xs font-medium text-primary hover:underline"
+                  >
+                    {showAllAlerts ? "Show less" : `View all ${alerts.length} alerts →`}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
