@@ -38,6 +38,7 @@ import EligibleJobs from "./pages/student/EligibleJobs";
 import TeacherDashboard from "./pages/teacher/Dashboard";
 import Subjects from "./pages/teacher/Subjects";
 import MarkAttendance from "./pages/teacher/MarkAttendance";
+import ResearchRequests from "./pages/teacher/ResearchRequests";
 import TeacherAssignments from "./pages/teacher/TeacherAssignments";
 import TeacherGrades from "./pages/teacher/TeacherGrades";
 import Syllabus from "./pages/teacher/Syllabus";
@@ -124,6 +125,7 @@ const App = () => (
                 <Route path="/teacher" element={<AppLayout requiredPortal="teacher"><TeacherDashboard /></AppLayout>} />
                 <Route path="/teacher/subjects" element={<AppLayout requiredPortal="teacher"><Subjects /></AppLayout>} />
                 <Route path="/teacher/mark-attendance" element={<AppLayout requiredPortal="teacher"><MarkAttendance /></AppLayout>} />
+                <Route path="/teacher/research/requests" element={<AppLayout requiredPortal="teacher"><ResearchRequests /></AppLayout>} />
                 <Route path="/teacher/assignments" element={<AppLayout requiredPortal="teacher"><TeacherAssignments /></AppLayout>} />
                 <Route path="/teacher/grades" element={<AppLayout requiredPortal="teacher"><TeacherGrades /></AppLayout>} />
                 <Route path="/teacher/syllabus" element={<AppLayout requiredPortal="teacher"><Syllabus /></AppLayout>} />

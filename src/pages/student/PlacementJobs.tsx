@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
-  Briefcase, MapPin, Calendar, Users, ChevronRight, Search,
-  Clock, GraduationCap, AlertTriangle, CheckCircle2,
+  Briefcase, Calendar, Users, ChevronRight, Search,
+  Bell, BellOff, BarChart3
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,205 +9,90 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePlacementDrives, useStudentPlacementNotifications, useTogglePlacementNotification } from "@/hooks/usePlacements";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { PlacementDrive, PlacementRound } from "@/types";
 
-interface Company {
-  id: string;
-  company: string;
-  logo_initial: string;
-  logo_color: string;
-  role: string;
-  type: string;
-  sector: string;
-  salary: { min: number; max: number; currency: string };
-  cgpa_cutoff: number;
-  backlog_allowed: boolean;
-  branches: string[];
-  batch: string;
-  location: string;
-  description: string;
-  requirements: string[];
-  rounds: string[];
-  drive_date: string;
-  registration_deadline: string;
-  status: string;
-  applied_count: number;
-}
-
-const COMPANIES: Company[] = [
-  {
-    id: "c001",
-    company: "Microsoft",
-    logo_initial: "MS",
-    logo_color: "#00a4ef",
-    role: "Software Development Engineer (SDE-1)",
-    type: "Full Time",
-    sector: "Product",
-    salary: { min: 40, max: 58, currency: "LPA" },
-    cgpa_cutoff: 7.5,
-    backlog_allowed: false,
-    branches: ["CSE", "ECE", "EE"],
-    batch: "2025-26",
-    location: "Hyderabad / Bengaluru",
-    description: "Join Microsoft's engineering teams to build cloud-scale systems on Azure, Office 365, and Xbox platforms. You'll design, develop, and test large-scale distributed software. Expect to work on high-impact features shipped to hundreds of millions of users globally.",
-    requirements: ["Strong DSA fundamentals (Arrays, Trees, Graphs, DP)", "Proficiency in C++, Java, or Python", "Understanding of OS, DBMS, Computer Networks", "System design basics"],
-    rounds: ["Online Coding (90 min)", "Technical Interview 1", "Technical Interview 2", "HR Round"],
-    drive_date: "2025-08-10",
-    registration_deadline: "2025-07-28",
-    status: "upcoming",
-    applied_count: 142,
-  },
-  {
-    id: "c002",
-    company: "Amazon",
-    logo_initial: "AMZ",
-    logo_color: "#FF9900",
-    role: "SDE-1 / SDE Intern",
-    type: "Full Time",
-    sector: "Product",
-    salary: { min: 32, max: 44, currency: "LPA" },
-    cgpa_cutoff: 7.0,
-    backlog_allowed: false,
-    branches: ["CSE", "ECE", "EE", "ME"],
-    batch: "2025-26",
-    location: "Hyderabad / Bengaluru / Chennai",
-    description: "Work on Amazon's core e-commerce platform, AWS services, or Alexa. SDEs at Amazon own full problem-to-production cycles — you'll write the code, test it, and deploy it. Amazon's leadership principles are central to their hiring process.",
-    requirements: ["Strong problem-solving with DSA", "OOP concepts in any language", "Familiarity with Linux/Unix systems", "Leadership principles alignment"],
-    rounds: ["Online Assessment (2 coding + 1 work simulation)", "Technical Interview 1", "Bar Raiser Interview", "HR Round"],
-    drive_date: "2025-08-18",
-    registration_deadline: "2025-08-04",
-    status: "upcoming",
-    applied_count: 187,
-  },
-  {
-    id: "c003",
-    company: "Goldman Sachs",
-    logo_initial: "GS",
-    logo_color: "#6699CC",
-    role: "Analyst – Engineering",
-    type: "Full Time",
-    sector: "Finance / Fintech",
-    salary: { min: 25, max: 35, currency: "LPA" },
-    cgpa_cutoff: 7.5,
-    backlog_allowed: false,
-    branches: ["CSE", "ECE", "EE", "Mathematics"],
-    batch: "2025-26",
-    location: "Bengaluru / Hyderabad",
-    description: "Goldman Sachs Engineering builds the systems that power global financial markets. As an Analyst you will work on trading platforms, risk engines, and core banking infrastructure. Expect low-latency, high-reliability systems at massive scale.",
-    requirements: ["Strong coding in Java or Python", "Data structures and algorithms", "Basic understanding of financial systems is a plus", "Quantitative reasoning skills"],
-    rounds: ["HackerRank Online Test", "Technical Round 1", "Technical Round 2", "HR/Culture Fit"],
-    drive_date: "2025-09-05",
-    registration_deadline: "2025-08-22",
-    status: "upcoming",
-    applied_count: 98,
-  },
-  {
-    id: "c004",
-    company: "JP Morgan Chase",
-    logo_initial: "JPM",
-    logo_color: "#003087",
-    role: "Software Engineer – Full Stack",
-    type: "Full Time",
-    sector: "Finance / Fintech",
-    salary: { min: 20, max: 28, currency: "LPA" },
-    cgpa_cutoff: 7.0,
-    backlog_allowed: false,
-    branches: ["CSE", "ECE", "EE"],
-    batch: "2025-26",
-    location: "Hyderabad / Mumbai / Bengaluru",
-    description: "JPMC's Code for Good and full-time SWE roles involve building next-generation financial services using modern web technologies. You'll work within agile squads developing APIs, dashboards, and internal tooling for one of the world's largest banks.",
-    requirements: ["React, Angular or Vue.js front-end skills", "Backend: Java / Spring Boot or Python / FastAPI", "REST API design and SQL/NoSQL databases", "Agile/Scrum methodology"],
-    rounds: ["Online Coding Test", "Technical Interview", "HR Interview"],
-    drive_date: "2025-09-14",
-    registration_deadline: "2025-08-30",
-    status: "upcoming",
-    applied_count: 115,
-  },
-  {
-    id: "c005",
-    company: "Adobe",
-    logo_initial: "ADBE",
-    logo_color: "#FA0F00",
-    role: "Software Development Engineer",
-    type: "Full Time",
-    sector: "Product",
-    salary: { min: 26, max: 38, currency: "LPA" },
-    cgpa_cutoff: 7.5,
-    backlog_allowed: false,
-    branches: ["CSE", "ECE"],
-    batch: "2025-26",
-    location: "Noida / Bengaluru",
-    description: "Adobe hires SDEs to work on Creative Cloud, Document Cloud, and Experience Cloud products. You'll build features used by millions of creators and enterprises. Adobe is known for its strong engineering culture, design thinking, and collaborative environment.",
-    requirements: ["Strong C++ or Java programming", "Data structures, algorithms, system design", "Understanding of graphics or multimedia is a plus", "Problem solving with attention to edge cases"],
-    rounds: ["Aptitude + Coding Test", "Technical Interview 1 (DSA)", "Technical Interview 2 (System Design)", "HR Round"],
-    drive_date: "2025-09-22",
-    registration_deadline: "2025-09-08",
-    status: "upcoming",
-    applied_count: 76,
-  },
-];
-
-function roleTypeLabel(type: string) {
-  if (type.toLowerCase().includes("intern") && !type.toLowerCase().includes("ppo")) return "2 Month Internship";
-  if (type.toLowerCase().includes("intern") && type.toLowerCase().includes("ppo")) return "6 Month Internship + PPO";
-  if (type.toLowerCase().includes("ppo")) return "6 Month Internship + PPO";
-  return "Full Time Role";
-}
-
-function roleTypeBadgeClass(type: string) {
-  const label = roleTypeLabel(type);
-  if (label.includes("PPO")) return "bg-blue-500/15 text-blue-600 border-blue-500/20";
-  if (label.includes("2 Month")) return "bg-purple-500/15 text-purple-600 border-purple-500/20";
-  return "bg-sky-500/15 text-sky-600 border-sky-500/20";
-}
-
-const SECTORS = ["All", "Product", "Finance / Fintech", "IT Services", "Core", "Consulting"];
 const CGPA_OPTIONS = ["All", "≥6.0", "≥6.5", "≥7.0", "≥7.5", "≥8.0"];
 const BRANCHES = ["All", "CSE", "ECE", "EE", "ME", "CE"];
 
-function daysUntil(dateStr: string) {
-  const diff = new Date(dateStr).getTime() - Date.now();
-  return Math.max(0, Math.ceil(diff / 86400000));
-}
-
 const PlacementJobs = () => {
-  const [sector, setSector] = useState("All");
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { data: drives = [], isLoading } = usePlacementDrives();
+  const { data: notifications = [] } = useStudentPlacementNotifications(user?.id);
+  const { mutate: toggleNotify, isPending: isToggling } = useTogglePlacementNotification();
+
   const [cgpa, setCgpa] = useState("All");
   const [branch, setBranch] = useState("All");
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Company | null>(null);
+  const [selected, setSelected] = useState<PlacementDrive | null>(null);
 
-  const filtered = COMPANIES.filter((c) => {
-    if (sector !== "All" && !c.sector.includes(sector)) return false;
-    if (cgpa !== "All") {
-      const min = parseFloat(cgpa.replace("≥", ""));
-      if (c.cgpa_cutoff > min) return false;
-    }
-    if (branch !== "All" && !c.branches.includes(branch)) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      if (!c.company.toLowerCase().includes(q) && !c.role.toLowerCase().includes(q)) return false;
-    }
-    return true;
-  });
+  // Realtime subscription for round status changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('placement-round-changes')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'placement_rounds' }, (payload: any) => {
+        const round = payload.new;
+        // Find if user is subscribed to this drive
+        if (notifications.includes(round.drive_id)) {
+          toast(`Round Update: ${round.round_name} is now ${round.status}`, {
+            icon: <Bell className="h-4 w-4" />,
+          });
+        }
+        queryClient.invalidateQueries({ queryKey: ["placement-drives"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [notifications, queryClient]);
+
+  const filtered = useMemo(() => {
+    return drives.filter((d: PlacementDrive) => {
+      if (cgpa !== "All") {
+        const min = parseFloat(cgpa.replace("≥", ""));
+        if (d.minimum_cgpa > min) return false;
+      }
+      if (branch !== "All" && !d.eligible_branches.includes(branch)) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        if (!d.company_name.toLowerCase().includes(q) && !d.role.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [drives, cgpa, branch, search]);
+
+  const statsData = useMemo(() => {
+    const years = [...new Set(drives.map(d => d.year))].sort();
+    return years.map(y => {
+      const yearDrives = drives.filter(d => d.year === y);
+      return {
+        year: y.toString(),
+        count: yearDrives.length,
+        avgPackage: yearDrives.reduce((acc, d) => acc + (d.package_max || 0), 0) / (yearDrives.length || 1)
+      };
+    });
+  }, [drives]);
+
+  const isSubscribed = (driveId: string) => notifications.includes(driveId);
+
+  if (isLoading) return <div className="space-y-4"><Skeleton className="h-20 w-full"/><div className="grid grid-cols-2 gap-4"><Skeleton className="h-48"/><Skeleton className="h-48"/></div></div>;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="scroll-reveal">
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Briefcase className="h-6 w-6" style={{ color: "hsl(var(--primary))" }} />
-          Placement Drives
+          <Briefcase className="h-6 w-6 text-primary" />
+          Placement Intelligence
         </h1>
-        <p className="text-muted-foreground text-sm mt-1">2025–26 Batch</p>
+        <p className="text-muted-foreground text-sm mt-1">Real-time drive tracking & analytics</p>
       </div>
 
-      {/* Filters */}
-      <div className="scroll-reveal flex flex-wrap gap-3 items-center" style={{ transitionDelay: "70ms" }}>
-        <Select value={sector} onValueChange={setSector}>
-          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Sector" /></SelectTrigger>
-          <SelectContent>{SECTORS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-        </Select>
+      <div className="scroll-reveal flex flex-wrap gap-3 items-center">
         <Select value={cgpa} onValueChange={setCgpa}>
           <SelectTrigger className="w-[120px]"><SelectValue placeholder="CGPA" /></SelectTrigger>
           <SelectContent>{CGPA_OPTIONS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
@@ -218,180 +103,121 @@ const PlacementJobs = () => {
         </Select>
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search company or role..."
-            className="pl-9"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <Input placeholder="Search company or role..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
       </div>
 
-      {/* Grid */}
-      {filtered.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground scroll-reveal">
-          <Briefcase className="mx-auto h-12 w-12 mb-3 opacity-40" />
-          <p>No drives match your filters.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filtered.map((c, i) => (
-            <Card
-              key={c.id}
-              className="scroll-reveal hover:shadow-md transition-shadow"
-              style={{ transitionDelay: `${(i + 2) * 70}ms` }}
-            >
-              <CardContent className="p-5 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div
-                    className="h-11 w-11 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
-                    style={{ background: c.logo_color, color: "#fff" }}
-                  >
-                    {c.logo_initial}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-lg leading-tight">{c.company}</h3>
-                    <p className="text-sm text-muted-foreground truncate">{c.role}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5">
-                  <Badge className={roleTypeBadgeClass(c.type)}>
-                    {roleTypeLabel(c.type)}
-                  </Badge>
-                  <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20">
-                    ₹{c.salary.min}–{c.salary.max} LPA
-                  </Badge>
-                  <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 hover:bg-amber-500/20">
-                    CGPA ≥ {c.cgpa_cutoff}
-                  </Badge>
-                  {!c.backlog_allowed ? (
-                    <Badge className="bg-red-500/15 text-red-600 border-red-500/20 hover:bg-red-500/20">No Backlogs</Badge>
-                  ) : (
-                    <Badge variant="secondary">Backlogs OK</Badge>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{c.location}</span>
-                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{new Date(c.drive_date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
-                </div>
-
-                <div className="flex flex-wrap gap-1">
-                  {c.branches.map((b) => (
-                    <span key={b} className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-medium">{b}</span>
-                  ))}
-                </div>
-
-                <Button variant="outline" className="w-full" onClick={() => setSelected(c)}>
-                  View Details <ChevronRight className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Detail Sheet */}
-      <Sheet open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
-        <SheetContent className="overflow-y-auto sm:max-w-lg">
-          {selected && (
-            <div className="space-y-6 pb-6">
-              <SheetHeader className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div
-                    className="h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold shrink-0"
-                    style={{ background: selected.logo_color, color: "#fff" }}
-                  >
-                    {selected.logo_initial}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {filtered.map((d: PlacementDrive) => (
+          <Card key={d.id} className="hover:border-primary/30 transition-all group">
+            <CardContent className="p-5 space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="flex gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center font-bold text-primary">
+                    {d.company_name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <SheetTitle className="text-xl">{selected.company}</SheetTitle>
-                    <p className="text-sm text-muted-foreground">{selected.role}</p>
-                    <p className="text-xs text-muted-foreground">{selected.type} · {selected.sector}</p>
+                    <h3 className="font-bold text-foreground leading-none">{d.company_name}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{d.role}</p>
                   </div>
                 </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={isSubscribed(d.id) ? "text-primary bg-primary/5" : "text-muted-foreground"}
+                  onClick={() => user?.id && toggleNotify({ studentId: user.id, driveId: d.id })}
+                  disabled={isToggling}
+                >
+                  {isSubscribed(d.id) ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100">₹{d.package_min}-{d.package_max} LPA</Badge>
+                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-100">CGPA {d.minimum_cgpa}+</Badge>
+                <Badge className={d.status === 'active' ? 'bg-orange-500' : 'bg-muted text-muted-foreground'}>{d.status}</Badge>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <div className="flex -space-x-2">
+                  {[1,2,3].map(i => <div key={i} className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[8px] font-bold">ST</div>)}
+                  <div className="w-6 h-6 rounded-full border-2 border-background bg-primary/10 flex items-center justify-center text-[8px] font-bold text-primary">+12</div>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setSelected(d)}>Timeline <ChevronRight className="h-3 w-3 ml-1"/></Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="pt-8 space-y-4">
+        <h2 className="text-lg font-bold flex items-center gap-2">
+          <BarChart3 className="h-5 w-5 text-primary" />
+          Historical Statistics
+        </h2>
+        <Card className="p-6">
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={statsData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="year" />
+                <YAxis />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                />
+                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Drives" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <Sheet open={!!selected} onOpenChange={o => !o && setSelected(null)}>
+        <SheetContent className="sm:max-w-md overflow-y-auto">
+          {selected && (
+            <div className="space-y-8 pt-4">
+              <SheetHeader>
+                <SheetTitle className="text-2xl font-bold">{selected.company_name}</SheetTitle>
+                <p className="text-muted-foreground">{selected.role}</p>
               </SheetHeader>
 
-              <div className="text-2xl font-bold text-emerald-600">
-                ₹{selected.salary.min}–{selected.salary.max} {selected.salary.currency}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4 shrink-0" />{selected.location}
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="h-4 w-4 shrink-0" />Drive: {new Date(selected.drive_date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4 shrink-0" />
-                  <span>Deadline: {new Date(selected.registration_deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                    <span className="ml-1 text-amber-600 font-medium">({daysUntil(selected.registration_deadline)}d left)</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <GraduationCap className="h-4 w-4 shrink-0" />CGPA ≥ {selected.cgpa_cutoff}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {!selected.backlog_allowed ? (
-                  <Badge className="bg-red-500/15 text-red-600 border-red-500/20">
-                    <AlertTriangle className="h-3 w-3 mr-1" />No Backlogs
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary"><CheckCircle2 className="h-3 w-3 mr-1" />Backlogs OK</Badge>
+              <div className="relative pl-6 space-y-8 border-l-2 border-muted ml-3">
+                {(selected.placement_rounds || []).sort((a: PlacementRound, b: PlacementRound) => a.sequence_order - b.sequence_order).map((round: PlacementRound) => (
+                  <div key={round.id} className="relative">
+                    <div className={`absolute -left-[31px] top-0 w-4 h-4 rounded-full border-2 border-background ${round.status === 'completed' ? 'bg-green-500' : round.status === 'ongoing' ? 'bg-orange-500 animate-pulse' : 'bg-muted'}`} />
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-bold text-sm">{round.round_name}</h4>
+                        <Badge variant="outline" className="text-[10px]">{round.status}</Badge>
+                      </div>
+                      <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                        <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> {round.round_date ? new Date(round.round_date).toLocaleDateString() : 'TBD'}</span>
+                        {round.selected_count && <span className="flex items-center gap-1"><Users className="h-3 w-3"/> {round.selected_count} cleared</span>}
+                      </div>
+                      {round.notes && <p className="text-xs bg-muted/30 p-2 rounded mt-2 border border-border/50 italic text-muted-foreground">{round.notes}</p>}
+                    </div>
+                  </div>
+                ))}
+                {(!selected.placement_rounds || selected.placement_rounds.length === 0) && (
+                  <div className="text-center py-4 text-muted-foreground text-sm">No rounds scheduled yet.</div>
                 )}
               </div>
 
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Eligible Branches</h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {selected.branches.map((b) => (
-                    <Badge key={b} variant="secondary">{b}</Badge>
-                  ))}
+              <div className="space-y-4 pt-4 border-t">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 bg-muted/30 rounded-lg">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Cutoff</p>
+                    <p className="text-sm font-semibold">{selected.minimum_cgpa} CGPA</p>
+                  </div>
+                  <div className="p-3 bg-muted/30 rounded-lg">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Package</p>
+                    <p className="text-sm font-semibold">{selected.package_max} LPA</p>
+                  </div>
                 </div>
+                <Button className="w-full" size="lg" onClick={() => user?.id && toggleNotify({ studentId: user.id, driveId: selected.id })}>
+                  {isSubscribed(selected.id) ? 'Unsubscribe from Updates' : 'Notify Me of Progress'}
+                </Button>
               </div>
-
-              <div>
-                <h4 className="font-semibold text-sm mb-2">About this Drive</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{selected.description}</p>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Requirements</h4>
-                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                  {selected.requirements.map((r, i) => <li key={i}>{r}</li>)}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Selection Rounds</h4>
-                <ol className="space-y-2">
-                  {selected.rounds.map((r, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm">
-                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
-                      {r}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />{selected.applied_count} students have registered
-              </div>
-
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={() => {
-                  toast.success("Interest registered! You'll be notified before the drive.");
-                  setSelected(null);
-                }}
-              >
-                Register Interest
-              </Button>
             </div>
           )}
         </SheetContent>

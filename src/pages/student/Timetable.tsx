@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import { cn } from "@/lib/utils";
+
 const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const;
 const SLOTS = [1, 2, 3, 4, 5, 6, 7, 8];
 const SLOT_TIMES = [
@@ -238,9 +240,4 @@ export default function Timetable() {
       )}
     </div>
   );
-}
-
-// Helper
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
 }

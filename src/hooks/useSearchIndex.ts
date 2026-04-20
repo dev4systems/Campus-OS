@@ -1,16 +1,17 @@
 import { useMemo } from "react";
 import Fuse from "fuse.js";
 import { useProfessors } from "./useProfessors";
-import { usePlacements } from "./usePlacements";
+import { usePlacementDrives } from "./usePlacements";
+import { Professor, PlacementDrive } from "@/types";
 
 export function useSearchIndex() {
   const { data: professors = [] } = useProfessors();
-  const { data: placements = [] } = usePlacements();
+  const { data: placements = [] } = usePlacementDrives();
 
   const searchData = useMemo(() => {
     return [
-      ...professors.map(p => ({ ...p, type: 'professor', title: p.name })),
-      ...placements.map(p => ({ ...p, type: 'placement', title: p.company })), // company vs company_name?
+      ...professors.map((p: Professor) => ({ ...p, type: 'professor', title: p.name })),
+      ...placements.map((p: PlacementDrive) => ({ ...p, type: 'placement', title: p.company_name })),
     ];
   }, [professors, placements]);
 

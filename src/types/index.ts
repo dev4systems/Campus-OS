@@ -15,27 +15,39 @@ export interface Professor {
   profile_url: string;
 }
 
-export interface Placement {
+export interface PlacementDrive {
   id: string;
-  company: string;
-  logo_initial: string;
-  logo_color: string;
+  company_name: string;
+  company_logo_url: string | null;
   role: string;
-  type: string;
-  sector: string;
-  salary: { min: number; max: number; currency: string };
-  cgpa_cutoff: number;
-  backlog_allowed: boolean;
-  branches: string[];
-  batch: string;
-  location: string;
-  description: string;
-  requirements: string[];
-  rounds: string[];
-  drive_date: string;
-  registration_deadline: string;
-  status: string;
-  applied_count: number;
+  package_min: number;
+  package_max: number;
+  eligible_branches: string[];
+  minimum_cgpa: number;
+  year: number;
+  status: 'upcoming' | 'active' | 'completed';
+  created_at: string;
+  placement_rounds?: PlacementRound[];
+}
+
+export interface PlacementRound {
+  id: string;
+  drive_id: string;
+  round_name: string;
+  round_date: string | null;
+  status: 'scheduled' | 'ongoing' | 'completed' | 'cancelled';
+  selected_count: number | null;
+  notes: string | null;
+  sequence_order: number;
+  created_at: string;
+}
+
+export interface PlacementNotification {
+  id: string;
+  student_id: string;
+  drive_id: string;
+  notify_on_round: number | null;
+  created_at: string;
 }
 
 export interface Profile {
@@ -108,4 +120,27 @@ export interface TimetableSlot {
 export interface TimetableDay {
   day: string;
   slots: TimetableSlot[];
+}
+
+export interface ResearchProject {
+  id: string;
+  professor_id: string;
+  title: string;
+  description: string | null;
+  status: 'active' | 'completed' | 'seeking_students';
+  domain_tags: string[];
+  max_students: number;
+  created_at: string;
+  professors?: Professor;
+}
+
+export interface CollaborationRequest {
+  id: string;
+  student_id: string;
+  project_id: string;
+  message: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  created_at: string;
+  profiles?: Profile;
+  research_projects?: ResearchProject;
 }
