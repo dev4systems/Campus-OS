@@ -38,17 +38,38 @@ export interface Placement {
   applied_count: number;
 }
 
+export interface Profile {
+  id: string;
+  full_name: string;
+  email: string;
+  role: 'student' | 'faculty' | 'admin' | 'placement_officer';
+  department: string | null;
+  semester: number | null;
+  roll_no: string | null;
+  avatar_url: string | null;
+  created_at: string;
+}
+
+export interface Course {
+  id: string;
+  code: string;
+  name: string;
+  department: string;
+  semester: number;
+  credits: number;
+  created_at?: string;
+}
+
 export interface Attendance {
   id: string;
-  user_id: string;
-  subject_id: string;
-  total_classes: number;
-  attended_classes: number;
-  updated_at: string;
-  subjects?: {
-    code: string;
-    name: string;
-  };
+  student_id: string;
+  course_id: string;
+  faculty_id: string;
+  date: string;
+  status: 'present' | 'absent' | 'late';
+  created_at: string;
+  courses?: Course;
+  profiles?: Partial<Profile>;
 }
 
 export interface BugReport {
