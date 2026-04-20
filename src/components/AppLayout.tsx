@@ -36,10 +36,10 @@ const LayoutSkeleton = () => (
 );
 
 const AppLayout = ({ children, requiredPortal }: AppLayoutProps) => {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, sessionLoading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
+  if (sessionLoading) {
     return <LayoutSkeleton />;
   }
 

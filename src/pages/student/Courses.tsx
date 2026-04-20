@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubjects, mockCourses } from "@/hooks/useStudentData";
-import { BookOpen, User, MapPin, Download } from "lucide-react";
+import { BookOpen, MapPin, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 

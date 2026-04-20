@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import { Search, MapPin, Navigation, X, AlertTriangle } from "lucide-react";
 
 // ── DATA ────────────────────────────────────────────────────────────────────

@@ -39,7 +39,7 @@ interface QuickAlert {
 }
 
 function buildAlerts(
-  isDemo: boolean,
+  _isDemo: boolean,
   assignmentsList: { id: string | number; title: string; subject: string; dueDate: string; status: string }[],
   feesList: { type: string; amount: number; paid: number; status: string; dueDate: string }[],
 ): QuickAlert[] {

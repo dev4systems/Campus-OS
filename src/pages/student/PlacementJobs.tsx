@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Briefcase, MapPin, Calendar, Users, ChevronRight, Search,
-  X, Clock, Building2, GraduationCap, AlertTriangle, CheckCircle2,
+  Clock, GraduationCap, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

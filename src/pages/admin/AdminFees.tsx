@@ -1,4 +1,4 @@
-import { CreditCard, Send, Download } from "lucide-react";
+import { Send, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, ChevronUp, Send, MessageSquare } from "lucide-react";
+import { ChevronDown, ChevronUp, Send } from "lucide-react";
 
 const statusStyles = {
   pending: { label: "Pending", dot: "⚪", cls: "bg-muted text-muted-foreground" },

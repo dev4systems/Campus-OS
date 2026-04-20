@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, BookOpen, Shield, Eye, EyeOff, ArrowLeft, Zap, Check, X, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import PortalCard from "@/components/PortalCard";
 import CampusImage from "@/components/CampusImage";
 
 const HERO_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/NIT_Durgapur_Main_Building.jpg/1280px-NIT_Durgapur_Main_Building.jpg";
-const CAMPUS_IMG = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/NIT_Durgapur.jpg/1280px-NIT_Durgapur.jpg";
 
 const portalConfig = [
   { key: "student" as Portal, title: "Student Portal", description: "Access your dashboard, timetable, grades & more", icon: GraduationCap, gradient: "bg-gradient-to-br from-primary/5 to-transparent" },

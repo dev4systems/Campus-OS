@@ -1,5 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { useGrades, mockGrades } from "@/hooks/useStudentData";
+import { useGrades } from "@/hooks/useStudentData";
 import { gradesData } from "@/data/mockData";
 import { Trophy, Download, ChevronDown, ChevronUp, FileText, Award } from "lucide-react";
 import EmptyState from "@/components/EmptyState";

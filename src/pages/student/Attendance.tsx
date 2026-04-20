@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAttendance, mockAttendance } from "@/hooks/useStudentData";
-import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CalendarCheck, AlertTriangle } from "lucide-react";
 import EmptyState from "@/components/EmptyState";

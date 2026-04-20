@@ -19,7 +19,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  sessionLoading: boolean;
   login: (email: string, password: string, portal: Portal) => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, fullName: string, portal: Portal) => Promise<{ success: boolean; error?: string }>;
   demoLogin: (portal: Portal) => void;
@@ -69,49 +69,62 @@ function mapSupabaseUser(su: SupabaseUser, profile?: any): User {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [sessionLoading, setSessionLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        // Fetch profile
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-        setUser(mapSupabaseUser(session.user, profile));
-      } else {
-        // Check for demo session
-        const saved = localStorage.getItem("nexus_demo_session");
-        if (saved) {
-          try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("nexus_demo_session"); }
+    let mounted = true;
+
+    async function initializeSession() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
+          
+          if (mounted) setUser(mapSupabaseUser(session.user, profile));
         } else {
-          setUser(null);
+          const saved = localStorage.getItem("nexus_demo_session");
+          if (saved && mounted) {
+            try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("nexus_demo_session"); }
+          }
         }
+      } catch (error) {
+        console.error("Error initializing auth session:", error);
+      } finally {
+        if (mounted) setSessionLoading(false);
       }
-      setIsLoading(false);
-    });
+    }
 
-    // Initial session check
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    initializeSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", session.user.id)
           .single();
-        setUser(mapSupabaseUser(session.user, profile));
+        if (mounted) {
+          setUser(mapSupabaseUser(session.user, profile));
+          setSessionLoading(false);
+        }
       } else {
-        const saved = localStorage.getItem("nexus_demo_session");
-        if (saved) {
-          try { setUser(JSON.parse(saved)); } catch { localStorage.removeItem("nexus_demo_session"); }
+        if (mounted) {
+          const saved = localStorage.getItem("nexus_demo_session");
+          if (!saved) setUser(null);
+          setSessionLoading(false);
         }
       }
-      setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string, portal: Portal): Promise<{ success: boolean; error?: string }> => {
@@ -153,6 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const demoUser = DEMO_USERS[portal];
     setUser(demoUser);
     localStorage.setItem("nexus_demo_session", JSON.stringify(demoUser));
+    setSessionLoading(false);
   };
 
   const logout = async () => {
@@ -170,11 +184,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, signup, demoLogin, logout, resetPassword }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, sessionLoading, login, signup, demoLogin, logout, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
 
 export function useAuth() {
   const ctx = useContext(AuthContext);

@@ -1,4 +1,4 @@
-import { GraduationCap, BookOpen, Users, Calendar } from "lucide-react";
+import { BookOpen, Users, Calendar } from "lucide-react";
 
 const courses = [
   { code: "CS301", name: "Data Structures & Algorithms", credits: 4, faculty: "Prof. R. Verma", enrolled: 120, semester: 5 },

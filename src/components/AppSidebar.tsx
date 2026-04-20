@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Calendar, ClipboardList, MapPin, BookOpen, BarChart3,
   GraduationCap, CreditCard, FileText, Megaphone, MessageSquare,
   Users, BookMarked, Upload, FolderOpen, School, Send, Star,
-  Settings, Shield, Building2, FileBarChart, Key, AlertTriangle,
+  Settings, Building2, FileBarChart, Key, AlertTriangle,
   Briefcase, ClipboardCheck, CalendarClock, ChevronDown,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
@@ -73,7 +72,6 @@ const AppSidebar = () => {
   const [placementsOpen, setPlacementsOpen] = useState(() => typeof window !== "undefined" && window.location.pathname.startsWith("/student/placements"));
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
   const prevCollapsed = useRef(collapsed);
   const [animState, setAnimState] = useState<"idle" | "entering" | "exiting">("idle");
 

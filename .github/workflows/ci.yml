@@ -1,0 +1,29 @@
+name: CI/CD
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install --frozen-lockfile
+      - run: bun run lint                    # ESLint
+      - run: bunx tsc --noEmit              # TypeScript typecheck
+      - run: bun run test                   # Vitest unit tests
+      - run: bunx playwright install --with-deps
+      - run: bun run test:e2e               # Playwright E2E
+  deploy:
+    needs: quality
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bun install && bun run build
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
