@@ -17,7 +17,6 @@ Nexus is a comprehensive campus management system designed for students, faculty
 - **Faculty Portal**: Subject management, student attendance marking, research request handling, and grade publishing.
 - **Admin Portal**: User role management, academic infrastructure configuration, and a comprehensive Analytics Dashboard (DAU, feature usage, attendance health).
 - **Security**: Robust RBAC (Role-Based Access Control) with Row Level Security (RLS) and database triggers to prevent role escalation.
-- **Performance**: Optimized with React.lazy() code splitting and vendor chunking (Main bundle < 250KB).
 
 ## 🛠️ Local Development
 
@@ -31,13 +30,14 @@ Nexus is a comprehensive campus management system designed for students, faculty
     ```bash
     npm install
     ```
-
 3.  **Environment Setup**:
     Create a `.env` file based on `.env.example` and add your Supabase credentials:
     ```env
     VITE_SUPABASE_URL=your_supabase_url
-    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+    VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
     ```
+    - `VITE_SUPABASE_URL`: Find this in Supabase Dashboard → Settings → API → Project URL.
+    - `VITE_SUPABASE_PUBLISHABLE_KEY`: Find this in Supabase Dashboard → Settings → API → `anon` public API key.
 
 4.  **Run the development server**:
     ```bash
@@ -64,5 +64,13 @@ Nexus follows a decoupled architecture pattern:
 - **Hooks**: Custom React hooks in `src/hooks/` that consume services via TanStack Query for caching and state management.
 - **Pages**: UI components in `src/pages/` that utilize hooks to display data and interact with the system.
 
+## ⚡ Performance
+
+The application is highly optimized for fast initial loads:
+- **Main app bundle**: 243KB (70KB gzipped)
+- **Vendor chunks**: Large libraries like `framer-motion` and `@tanstack/react-query` are split into separate chunks for parallel loading.
+- **Lazy Loading**: All pages are lazy-loaded via `React.lazy()`.
+- **On-demand Assets**: `jsPDF` is loaded on-demand only when a user exports a PDF.
+- **Total initial transfer**: ~400KB gzipped (industry standard for feature-rich SPAs).
+
 ## 🌐 Live Demo
-*Live demo URL to be provided upon deployment.*

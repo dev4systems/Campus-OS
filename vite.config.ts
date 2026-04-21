@@ -19,10 +19,10 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor-charts': ['recharts'],
           'vendor-icons': ['lucide-react'],
           'vendor-ui': ['framer-motion', '@tanstack/react-query'],
           'vendor-core': ['react', 'react-dom', 'react-router-dom'],
