@@ -12,7 +12,7 @@ interface AppLayoutProps {
   requiredPortal?: Portal;
 }
 
-const LayoutSkeleton = () => (
+export const LayoutSkeleton = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
     <div className="w-full max-w-6xl p-6 space-y-6">
       <div className="flex items-center gap-4">

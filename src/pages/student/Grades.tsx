@@ -7,9 +7,9 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
-import jsPDF from "jspdf";
 
-const generateGradeCard = (semData: { sem: number; sgpa: number; courses: any[] }, studentName: string, rollNo: string) => {
+const generateGradeCard = async (semData: { sem: number; sgpa: number; courses: any[] }, studentName: string, rollNo: string) => {
+  const { default: jsPDF } = await import("jspdf");
   const doc = new jsPDF();
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(13, 71, 161);
@@ -186,10 +186,10 @@ const Grades = () => {
                 <h2 className="text-sm font-semibold text-foreground">Current Semester (Sem {semesterGPAs[semesterGPAs.length - 1]?.sem || "?"})</h2>
                 <Button
                   variant="outline" size="sm" className="text-xs gap-1.5"
-                  onClick={() => {
+                  onClick={async () => {
                     const sem = semesterGPAs[semesterGPAs.length - 1]?.sem || 1;
                     const sgpa = semesterGPAs[semesterGPAs.length - 1]?.gpa || 0;
-                    generateGradeCard({ sem, sgpa, courses: currentGrades }, studentName, rollNo);
+                    await generateGradeCard({ sem, sgpa, courses: currentGrades }, studentName, rollNo);
                   }}
                 >
                   <Download className="h-4 w-4" /> Download Grade Card
@@ -235,7 +235,7 @@ const Grades = () => {
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground hover:text-foreground"
-                        onClick={(e) => { e.stopPropagation(); generateGradeCard(sem, studentName, rollNo); }}
+                        onClick={async (e) => { e.stopPropagation(); await generateGradeCard(sem, studentName, rollNo); }}
                       >
                         <Download className="h-4 w-4" />
                         <span className="hidden sm:inline">Download</span>

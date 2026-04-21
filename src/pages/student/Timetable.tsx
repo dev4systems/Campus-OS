@@ -6,8 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Download, Printer, Info } from "lucide-react";
 import { motion } from "framer-motion";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 
 import { cn } from "@/lib/utils";
 
@@ -78,7 +76,9 @@ export default function Timetable() {
     return -1;
   }, []);
 
-  const exportPDF = () => {
+  const exportPDF = async () => {
+    const { jsPDF } = await import("jspdf");
+    const { default: autoTable } = await import("jspdf-autotable");
     const doc = new jsPDF('landscape');
     doc.setFontSize(18);
     doc.text(`NIT Durgapur - Timetable (${dept} Sem ${sem} Sec ${section})`, 14, 20);

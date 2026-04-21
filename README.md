@@ -1,73 +1,68 @@
-# Welcome to your Lovable project
+# Nexus — Campus Management Portal
 
-## Project info
+Nexus is a comprehensive campus management system designed for students, faculty, and administrators. It provides a centralized platform for academic records, timetable management, research collaboration, placement tracking, and system analytics.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Tech Stack
 
-## How can I edit this code?
+- **Frontend**: React (TypeScript), Vite, Tailwind CSS, shadcn/ui
+- **Backend/Database**: Supabase (PostgreSQL, Auth, RLS)
+- **State Management**: TanStack Query (React Query)
+- **Testing**: Vitest (Unit), Playwright (E2E)
+- **Maps**: Leaflet (OpenStreetMap)
+- **Charts**: Recharts
 
-There are several ways of editing your application.
+## ✨ Key Features
 
-**Use Lovable**
+- **Student Portal**: Dashboard with real-time stats, interactive timetable, attendance tracking, grade card downloads (PDF), fees management, and placement drive notifications.
+- **Faculty Portal**: Subject management, student attendance marking, research request handling, and grade publishing.
+- **Admin Portal**: User role management, academic infrastructure configuration, and a comprehensive Analytics Dashboard (DAU, feature usage, attendance health).
+- **Security**: Robust RBAC (Role-Based Access Control) with Row Level Security (RLS) and database triggers to prevent role escalation.
+- **Performance**: Optimized with React.lazy() code splitting and vendor chunking (Main bundle < 250KB).
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🛠️ Local Development
 
-Changes made via Lovable will be committed automatically to this repo.
+1.  **Clone the repository**:
+    ```bash
+    git clone <repository-url>
+    cd nexus
+    ```
 
-**Use your preferred IDE**
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3.  **Environment Setup**:
+    Create a `.env` file based on `.env.example` and add your Supabase credentials:
+    ```env
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+4.  **Run the development server**:
+    ```bash
+    npm run dev
+    ```
 
-Follow these steps:
+## 🗄️ Database Migrations
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+To set up the database schema and security policies:
+1. Navigate to the **SQL Editor** in your Supabase Dashboard.
+2. Open the file `supabase/APPLY_TO_DASHBOARD.sql`.
+3. Copy the entire content and paste it into the SQL Editor.
+4. Run the query to create all tables, functions, and RLS policies.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🧪 Testing
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **Unit Tests**: `npm run test` (Runs Vitest)
+- **E2E Tests**: `npx playwright test` (Requires Playwright browser installation)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 🏗️ Architecture Overview
 
-**Edit a file directly in GitHub**
+Nexus follows a decoupled architecture pattern:
+- **Services**: Pure logic and Supabase client calls residing in `src/services/`.
+- **Hooks**: Custom React hooks in `src/hooks/` that consume services via TanStack Query for caching and state management.
+- **Pages**: UI components in `src/pages/` that utilize hooks to display data and interact with the system.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🌐 Live Demo
+*Live demo URL to be provided upon deployment.*
