@@ -16,7 +16,10 @@ const STATUS_COLORS = {
   late: "#f59e0b",
 };
 
+import { usePageView } from "@/hooks/useAnalytics";
+
 export default function StudentAttendance() {
+  usePageView('Attendance Tracker');
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: attendance = [], isLoading } = useStudentAttendance(user?.id);

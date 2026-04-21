@@ -10,14 +10,14 @@ export function useSearchIndex() {
 
   const searchData = useMemo(() => {
     return [
-      ...professors.map((p: Professor) => ({ ...p, type: 'professor', title: p.name })),
-      ...placements.map((p: PlacementDrive) => ({ ...p, type: 'placement', title: p.company_name })),
+      ...professors.map((p: Professor) => ({ ...p, type: 'professor' as const, title: p.name })),
+      ...placements.map((p: PlacementDrive) => ({ ...p, type: 'placement' as const, title: p.company_name })),
     ];
   }, [professors, placements]);
 
   const fuse = useMemo(() => {
     return new Fuse(searchData, {
-      keys: ["title", "name", "subjects", "research", "department", "company", "role"],
+      keys: ["title", "name", "subjects", "research", "department", "company_name", "role"],
       threshold: 0.35,
     });
   }, [searchData]);

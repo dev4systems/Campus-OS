@@ -52,6 +52,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import AcademicMgmt from "./pages/admin/AcademicMgmt";
 import TimetableManage from "./pages/admin/TimetableManage";
+import AnalyticsDashboard from "./pages/admin/Analytics";
 import AdminLibrary from "./pages/admin/AdminLibrary";
 import Complaints from "./pages/admin/Complaints";
 import AdminFees from "./pages/admin/AdminFees";
@@ -140,6 +141,7 @@ const App = () => (
                 <Route path="/admin/users" element={<AppLayout requiredPortal="admin"><UserManagement /></AppLayout>} />
                 <Route path="/admin/academic" element={<AppLayout requiredPortal="admin"><AcademicMgmt /></AppLayout>} />
                 <Route path="/admin/timetable/manage" element={<AppLayout requiredPortal="admin"><TimetableManage /></AppLayout>} />
+                <Route path="/admin/analytics" element={<AppLayout requiredPortal="admin"><AnalyticsDashboard /></AppLayout>} />
                 <Route path="/admin/library" element={<AppLayout requiredPortal="admin"><AdminLibrary /></AppLayout>} />
                 <Route path="/admin/complaints" element={<AppLayout requiredPortal="admin"><Complaints /></AppLayout>} />
                 <Route path="/admin/fees" element={<AppLayout requiredPortal="admin"><AdminFees /></AppLayout>} />

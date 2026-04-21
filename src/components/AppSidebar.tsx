@@ -42,6 +42,7 @@ const teacherNav = [
   { title: "Dashboard", url: "/teacher", icon: LayoutDashboard },
   { title: "My Subjects", url: "/teacher/subjects", icon: BookMarked },
   { title: "Mark Attendance", url: "/teacher/mark-attendance", icon: BarChart3 },
+  { title: "Research Requests", url: "/teacher/research/requests", icon: FolderOpen },
   { title: "Assignments", url: "/teacher/assignments", icon: ClipboardList },
   { title: "Grades", url: "/teacher/grades", icon: Star },
   { title: "Syllabus Upload", url: "/teacher/syllabus", icon: Upload },
@@ -54,8 +55,10 @@ const teacherNav = [
 
 const adminNav = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+  { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
   { title: "User Management", url: "/admin/users", icon: Users },
   { title: "Academic Mgmt", url: "/admin/academic", icon: GraduationCap },
+  { title: "Timetable Builder", url: "/admin/timetable/manage", icon: Calendar },
   { title: "Library Mgmt", url: "/admin/library", icon: BookOpen },
   { title: "Complaints", url: "/admin/complaints", icon: AlertTriangle },
   { title: "Fee Management", url: "/admin/fees", icon: CreditCard },

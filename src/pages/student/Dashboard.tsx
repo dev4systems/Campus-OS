@@ -124,7 +124,10 @@ const ALERT_STYLES: Record<string, { border: string; bg: string; iconColor: stri
 
 const ALERT_ICONS = { exam: CalendarX, assignment: AlertCircle, fee: Receipt };
 
+import { usePageView } from "@/hooks/useAnalytics";
+
 const StudentDashboard = () => {
+  usePageView('Student Dashboard');
   const { user } = useAuth();
   const isDemo = !!user?.isDemo;
   const [profileLoading, setProfileLoading] = useState(!isDemo);
