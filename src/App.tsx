@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect, Suspense, lazy } from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -11,56 +11,59 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { DirectionsProvider } from "@/contexts/DirectionsContext";
 import FloatingDirectionsPanel from "@/components/FloatingDirectionsPanel";
 import AppLayout from "@/components/AppLayout";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import ResetPassword from "./pages/ResetPassword";
+// LayoutSkeleton is exported from AppLayout as a component we can use
+import { LayoutSkeleton } from "@/components/AppLayout";
+
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 // Student pages
-import StudentDashboard from "./pages/student/Dashboard";
-import Timetable from "./pages/student/Timetable";
-import StudentAssignments from "./pages/student/Assignments";
-import CampusNav from "./pages/student/CampusNav";
-import Library from "./pages/student/Library";
-import Attendance from "./pages/student/Attendance";
-import Courses from "./pages/student/Courses";
-import Grades from "./pages/student/Grades";
-import Professors from "./pages/student/Professors";
-import Fees from "./pages/student/Fees";
-import Exams from "./pages/student/Exams";
-import CampusBuzz from "./pages/student/CampusBuzz";
-import Feedback from "./pages/student/Feedback";
-import PlacementJobs from "./pages/student/PlacementJobs";
-import AppliedJobs from "./pages/student/AppliedJobs";
-import PlacementSchedule from "./pages/student/PlacementSchedule";
-import EligibleJobs from "./pages/student/EligibleJobs";
+const StudentDashboard = lazy(() => import("./pages/student/Dashboard"));
+const Timetable = lazy(() => import("./pages/student/Timetable"));
+const StudentAssignments = lazy(() => import("./pages/student/Assignments"));
+const CampusNav = lazy(() => import("./pages/student/CampusNav"));
+const Library = lazy(() => import("./pages/student/Library"));
+const Attendance = lazy(() => import("./pages/student/Attendance"));
+const Courses = lazy(() => import("./pages/student/Courses"));
+const Grades = lazy(() => import("./pages/student/Grades"));
+const Professors = lazy(() => import("./pages/student/Professors"));
+const Fees = lazy(() => import("./pages/student/Fees"));
+const Exams = lazy(() => import("./pages/student/Exams"));
+const CampusBuzz = lazy(() => import("./pages/student/CampusBuzz"));
+const Feedback = lazy(() => import("./pages/student/Feedback"));
+const PlacementJobs = lazy(() => import("./pages/student/PlacementJobs"));
+const AppliedJobs = lazy(() => import("./pages/student/AppliedJobs"));
+const PlacementSchedule = lazy(() => import("./pages/student/PlacementSchedule"));
+const EligibleJobs = lazy(() => import("./pages/student/EligibleJobs"));
 
 // Teacher pages
-import TeacherDashboard from "./pages/teacher/Dashboard";
-import Subjects from "./pages/teacher/Subjects";
-import MarkAttendance from "./pages/teacher/MarkAttendance";
-import ResearchRequests from "./pages/teacher/ResearchRequests";
-import TeacherAssignments from "./pages/teacher/TeacherAssignments";
-import TeacherGrades from "./pages/teacher/TeacherGrades";
-import Syllabus from "./pages/teacher/Syllabus";
-import Materials from "./pages/teacher/Materials";
-import Classes from "./pages/teacher/Classes";
-import Communication from "./pages/teacher/Communication";
-import FeedbackEval from "./pages/teacher/FeedbackEval";
+const TeacherDashboard = lazy(() => import("./pages/teacher/Dashboard"));
+const Subjects = lazy(() => import("./pages/teacher/Subjects"));
+const MarkAttendance = lazy(() => import("./pages/teacher/MarkAttendance"));
+const ResearchRequests = lazy(() => import("./pages/teacher/ResearchRequests"));
+const TeacherAssignments = lazy(() => import("./pages/teacher/TeacherAssignments"));
+const TeacherGrades = lazy(() => import("./pages/teacher/TeacherGrades"));
+const Syllabus = lazy(() => import("./pages/teacher/Syllabus"));
+const Materials = lazy(() => import("./pages/teacher/Materials"));
+const Classes = lazy(() => import("./pages/teacher/Classes"));
+const Communication = lazy(() => import("./pages/teacher/Communication"));
+const FeedbackEval = lazy(() => import("./pages/teacher/FeedbackEval"));
 
 // Admin pages
-import AdminDashboard from "./pages/admin/Dashboard";
-import UserManagement from "./pages/admin/UserManagement";
-import AcademicMgmt from "./pages/admin/AcademicMgmt";
-import TimetableManage from "./pages/admin/TimetableManage";
-import AnalyticsDashboard from "./pages/admin/Analytics";
-import AdminLibrary from "./pages/admin/AdminLibrary";
-import Complaints from "./pages/admin/Complaints";
-import AdminFees from "./pages/admin/AdminFees";
-import Credentials from "./pages/admin/Credentials";
-import Infrastructure from "./pages/admin/Infrastructure";
-import Reports from "./pages/admin/Reports";
-import AdminSettings from "./pages/admin/AdminSettings";
-import AdminFeedback from "./pages/admin/AdminFeedback";
+const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
+const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
+const AcademicMgmt = lazy(() => import("./pages/admin/AcademicMgmt"));
+const TimetableManage = lazy(() => import("./pages/admin/TimetableManage"));
+const AnalyticsDashboard = lazy(() => import("./pages/admin/Analytics"));
+const AdminLibrary = lazy(() => import("./pages/admin/AdminLibrary"));
+const Complaints = lazy(() => import("./pages/admin/Complaints"));
+const AdminFees = lazy(() => import("./pages/admin/AdminFees"));
+const Credentials = lazy(() => import("./pages/admin/Credentials"));
+const Infrastructure = lazy(() => import("./pages/admin/Infrastructure"));
+const Reports = lazy(() => import("./pages/admin/Reports"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminFeedback = lazy(() => import("./pages/admin/AdminFeedback"));
 
 const queryClient = new QueryClient();
 const ScrollRevealObserver = () => {
@@ -99,6 +102,7 @@ const App = () => (
             <BrowserRouter>
               <ScrollRevealObserver />
               <ErrorBoundary>
+              <Suspense fallback={<LayoutSkeleton />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
@@ -154,6 +158,7 @@ const App = () => (
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </Suspense>
               </ErrorBoundary>
               <FloatingDirectionsPanel />
             </BrowserRouter>

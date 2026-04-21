@@ -33,24 +33,6 @@ USING (auth.uid() = id OR role = 'admin');
 CREATE POLICY "Profiles update policy" ON public.profiles FOR UPDATE TO authenticated
 USING (auth.uid() = id OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
 
--- ... rest of existing code ...
-
-CREATE OR REPLACE FUNCTION prevent_role_escalation()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF OLD.role IS DISTINCT FROM NEW.role THEN
-    IF (SELECT role FROM public.profiles WHERE id = auth.uid()) != 'admin' THEN
-      RAISE EXCEPTION 'Only admins can change user roles';
-    END IF;
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE TRIGGER enforce_role_protection
-BEFORE UPDATE ON public.profiles
-FOR EACH ROW EXECUTE FUNCTION prevent_role_escalation();
-
 -- DELETE: only admins can delete users.
 CREATE POLICY "Profiles delete policy" ON public.profiles FOR DELETE TO authenticated
 USING (role = 'admin');
@@ -181,3 +163,19 @@ CREATE POLICY "Collaboration insert policy" ON public.collaboration_requests FOR
 CREATE POLICY "Collaboration update policy" ON public.collaboration_requests FOR UPDATE TO authenticated 
 USING (role = 'admin' OR (role = 'faculty' AND (SELECT email FROM public.profiles WHERE id = auth.uid()) = (SELECT email FROM public.professors WHERE id = professor_id)));
 CREATE POLICY "Collaboration delete policy" ON public.collaboration_requests FOR DELETE TO authenticated USING (role = 'admin');
+
+CREATE OR REPLACE FUNCTION prevent_role_escalation()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF OLD.role IS DISTINCT FROM NEW.role THEN
+    IF (SELECT role FROM public.profiles WHERE id = auth.uid()) != 'admin' THEN
+      RAISE EXCEPTION 'Only admins can change user roles';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER enforce_role_protection
+BEFORE UPDATE ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION prevent_role_escalation();
