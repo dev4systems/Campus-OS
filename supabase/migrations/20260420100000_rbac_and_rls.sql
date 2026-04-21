@@ -31,7 +31,9 @@ USING (auth.uid() = id OR role = 'admin');
 -- but RLS can't easily restrict specific columns in WITH CHECK without complex logic.
 -- However, we can use a trigger to prevent role changes.
 CREATE POLICY "Profiles update policy" ON public.profiles FOR UPDATE TO authenticated
-USING (auth.uid() = id OR role = 'admin');
+USING (auth.uid() = id OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
+
+-- ... rest of existing code ...
 
 CREATE OR REPLACE FUNCTION prevent_role_escalation()
 RETURNS TRIGGER AS $$
