@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { examsData, buzzPosts, trendingTags } from "@/data/mockData";
 import { useSubjects, useDashboardStats, useAssignments, useFees, mockAssignments, mockFees } from "@/hooks/useStudentData";
+import { usePageView } from "@/hooks/useAnalytics";
+import { AnnouncementsWidget } from "@/components/AnnouncementsWidget";
 
 const semesterSubjects: Record<number, { code: string; name: string; credits: number }[]> = {
   1: [{ code: "MA101", name: "Mathematics I", credits: 4 }, { code: "PH101", name: "Physics I", credits: 4 }, { code: "CS101", name: "Intro to Programming", credits: 3 }],
