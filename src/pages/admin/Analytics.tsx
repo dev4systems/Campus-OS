@@ -5,7 +5,9 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from 'recharts';
-import { Users, Activity, GraduationCap, Briefcase } from "lucide-react";
+import { Users, Activity, GraduationCap, Briefcase, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { exportToCSV } from "@/lib/export";
 
 const COLORS = ['#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#a855f7'];
 
@@ -14,6 +16,12 @@ export default function AnalyticsDashboard() {
   const { dau, featureUsage, attendanceHealth, placementFunnel } = useAnalytics();
 
   const isLoading = dau.isLoading || featureUsage.isLoading || attendanceHealth.isLoading || placementFunnel.isLoading;
+
+  const handleExport = () => {
+    if (featureUsage.data) {
+      exportToCSV(featureUsage.data, "Nexus_Feature_Usage");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -31,9 +39,14 @@ export default function AnalyticsDashboard() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Analytics Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Platform-wide usage and health metrics</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Analytics Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">Platform-wide usage and health metrics</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+          <Download className="h-4 w-4" /> Export Report
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

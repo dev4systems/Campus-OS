@@ -7,43 +7,67 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Bug, Send } from "lucide-react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const pages = ["Home", "Dashboard", "Timetable", "Campus Buzz", "Map", "Feedback", "Other"];
 const severities = [
   { value: "minor", label: "🟢 Minor", desc: "Cosmetic or low-impact" },
   { value: "moderate", label: "🟡 Moderate", desc: "Feature partially broken" },
   { value: "critical", label: "🔴 Critical", desc: "App crash or data loss" },
-];
+] as const;
+
+const bugReportSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters").max(100, "Title is too long"),
+  page_section: z.string().min(1, "Please select a page or section"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  severity: z.enum(["minor", "moderate", "critical"]),
+  contact_email: z.string().email("Invalid email address").optional().or(z.literal("")),
+});
+
+type BugReportFormValues = z.infer<typeof bugReportSchema>;
 
 const BugReportWidget = () => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [title, setTitle] = useState("");
-  const [page, setPage] = useState("");
-  const [description, setDescription] = useState("");
-  const [severity, setSeverity] = useState("minor");
-  const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !page || !description.trim()) return;
+  const form = useForm<BugReportFormValues>({
+    resolver: zodResolver(bugReportSchema),
+    defaultValues: {
+      title: "",
+      page_section: "",
+      description: "",
+      severity: "minor",
+      contact_email: "",
+    },
+  });
 
+  const onSubmit = async (data: BugReportFormValues) => {
     setSubmitting(true);
     try {
       const { error } = await supabase.from("bug_reports" as any).insert({
-        title: title.trim(),
-        page_section: page,
-        description: description.trim(),
-        severity,
-        contact_email: email.trim() || null,
+        title: data.title.trim(),
+        page_section: data.page_section,
+        description: data.description.trim(),
+        severity: data.severity,
+        contact_email: data.contact_email?.trim() || null,
         user_id: user?.id || null,
       } as any);
 
       if (error) throw error;
 
       toast({ title: "✅ Bug reported!", description: "Our dev team will look into it." });
-      setTitle(""); setPage(""); setDescription(""); setSeverity("minor"); setEmail("");
+      form.reset();
     } catch {
       toast({ title: "Failed to submit", description: "Please try again.", variant: "destructive" });
     } finally {
@@ -62,70 +86,104 @@ const BugReportWidget = () => {
           Report issues directly to the dev team. Every report helps us build a better Campus Companion.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            placeholder="Short description of the issue"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="bg-card h-12"
-          />
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Select value={page} onValueChange={setPage} required>
-              <SelectTrigger className="bg-card h-12">
-                <SelectValue placeholder="Page / Section" />
-              </SelectTrigger>
-              <SelectContent>
-                {pages.map((p) => (
-                  <SelectItem key={p} value={p}>{p}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Input
-              type="email"
-              placeholder="your@email.com — we'll update you when fixed"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-card h-12"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="Short description of the issue" className="bg-card h-12" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <Textarea
-            placeholder="Describe what happened, what you expected, and steps to reproduce..."
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            className="bg-card"
-          />
+            <div className="grid sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="page_section"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="bg-card h-12">
+                          <SelectValue placeholder="Page / Section" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {pages.map((p) => (
+                          <SelectItem key={p} value={p}>{p}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-foreground">Severity</p>
-            <div className="flex gap-3 flex-wrap">
-              {severities.map((s) => (
-                <button
-                  key={s.value}
-                  type="button"
-                  onClick={() => setSeverity(s.value)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
-                    severity === s.value
-                      ? "border-primary bg-primary/10 text-foreground"
-                      : "border-border bg-card text-muted-foreground hover:border-primary/40"
-                  }`}
-                >
-                  {s.label}
-                </button>
-              ))}
+              <FormField
+                control={form.control}
+                name="contact_email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="your@email.com — we'll update you when fixed" className="bg-card h-12" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          </div>
 
-          <Button type="submit" disabled={submitting || !title.trim() || !page || !description.trim()}>
-            <Send className="h-4 w-4 mr-2" />
-            {submitting ? "Submitting..." : "Submit Bug Report"}
-          </Button>
-        </form>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea placeholder="Describe what happened, what you expected, and steps to reproduce..." rows={4} className="bg-card" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="severity"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-medium text-foreground">Severity</FormLabel>
+                  <div className="flex gap-3 flex-wrap">
+                    {severities.map((s) => (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => field.onChange(s.value)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                          field.value === s.value
+                            ? "border-primary bg-primary/10 text-foreground"
+                            : "border-border bg-card text-muted-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" disabled={submitting}>
+              <Send className="h-4 w-4 mr-2" />
+              {submitting ? "Submitting..." : "Submit Bug Report"}
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );

@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, CheckCircle2, XCircle } from "lucide-react";
+import { Calendar as CalendarIcon, CheckCircle2, XCircle, Download } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Attendance, Profile } from "@/types";
+import { exportToCSV } from "@/lib/export";
 
 export default function MarkAttendance() {
   const { user } = useAuth();
@@ -43,6 +44,18 @@ export default function MarkAttendance() {
       newDraft[s.id] = status;
     });
     setDraft(newDraft);
+  };
+
+  const handleExport = () => {
+    if (!students || students.length === 0) return;
+    const exportData = (students as Profile[]).map(s => ({
+      "Roll No": s.roll_no || 'N/A',
+      "Name": s.full_name || s.email,
+      "Status": draft[s.id] ? draft[s.id].toUpperCase() : 'ABSENT',
+      "Date": dateStr,
+      "Course ID": selectedCourse
+    }));
+    exportToCSV(exportData, `Attendance_${selectedCourse}_${dateStr}`);
   };
 
   const handleSubmit = () => {

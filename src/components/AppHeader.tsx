@@ -1,10 +1,11 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { LogOut, Bell } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import FuseSearch from "@/components/FuseSearch";
+import { NotificationPopover } from "@/components/NotificationPopover";
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
@@ -35,10 +36,7 @@ const AppHeader = () => {
       </div>
       <div className="flex items-center gap-1">
         <ThemeToggle />
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative" data-tooltip="Notifications">
-          <Bell className="h-5 w-5" />
-          <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary" />
-        </Button>
+        <NotificationPopover />
         <div className="hidden sm:flex items-center gap-2 mr-2">
           <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
             {user?.name?.split(" ").map((n) => n[0]).join("").slice(0, 2)}

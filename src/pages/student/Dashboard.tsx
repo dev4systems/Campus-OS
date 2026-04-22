@@ -346,16 +346,8 @@ const StudentDashboard = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="scroll-reveal rounded-xl border border-border bg-card p-5">
-            <h2 className="text-sm font-semibold text-foreground mb-3">🔥 Campus Trending</h2>
-            <div className="space-y-2">
-              {trendingTags.slice(0, 5).map((tag) => (
-                <div key={tag.tag} className="flex items-center justify-between text-sm">
-                  <span className="text-primary font-medium">{tag.tag}</span>
-                  <span className="text-xs text-muted-foreground">{tag.count >= 1000 ? `${(tag.count / 1000).toFixed(1)}K` : tag.count}</span>
-                </div>
-              ))}
-            </div>
+          <div className="h-[400px]">
+            <AnnouncementsWidget />
           </div>
 
           <div className="scroll-reveal rounded-xl border border-border bg-card p-5">

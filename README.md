@@ -13,10 +13,19 @@ Nexus is a comprehensive campus management system designed for students, faculty
 
 ## ✨ Key Features
 
-- **Student Portal**: Dashboard with real-time stats, interactive timetable, attendance tracking, grade card downloads (PDF), fees management, and placement drive notifications.
-- **Faculty Portal**: Subject management, student attendance marking, research request handling, and grade publishing.
-- **Admin Portal**: User role management, academic infrastructure configuration, and a comprehensive Analytics Dashboard (DAU, feature usage, attendance health).
-- **Security**: Robust RBAC (Role-Based Access Control) with Row Level Security (RLS) and database triggers to prevent role escalation.
+- **Student Portal**: Dashboard with real-time stats, interactive timetable, attendance tracking, grade card downloads (PDF), fees management, placement drive notifications, and system announcements.
+- **Faculty Portal**: Subject management, student attendance marking with CSV export, research request handling, grade publishing, and targeted alerts.
+- **Admin Portal**: User role management, academic infrastructure configuration, global announcements creation, and a comprehensive Analytics Dashboard with CSV data export.
+- **Security & Reliability**: Robust RBAC (Role-Based Access Control) with Row Level Security (RLS). Zod schema validation applied to critical forms (e.g., Bug Reports) to prevent malformed data.
+- **Global UX**: Real-time Notification Center (in-app popover), responsive navigation, and optimized skeleton loading states.
+
+## 🚀 Production Readiness
+
+Recent optimizations have elevated the project to production-grade quality:
+- **In-App Notifications & Announcements**: Centralized communication system driven by Supabase tables and strict RLS policies.
+- **Zod Validation**: Critical forms are safeguarded against invalid input via `react-hook-form` and `zod`.
+- **Data Export**: Reusable CSV export utility implemented for admin analytics and faculty attendance sheets.
+- **Polished Dashboards**: Actionable widgets replacing static placeholders, improving dashboard utility across all three portals.
 
 ## 🛠️ Local Development
 
