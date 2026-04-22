@@ -13,28 +13,6 @@ CREATE TABLE IF NOT EXISTS public.announcements (
 
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Announcements select policy" ON public.announcements
-FOR SELECT TO authenticated USING (
-  target_role = 'all' OR 
-  target_role = (SELECT role FROM public.profiles WHERE id = auth.uid()) OR
-  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-);
-
-CREATE POLICY "Announcements insert policy" ON public.announcements
-FOR INSERT TO authenticated WITH CHECK (
-  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-);
-
-CREATE POLICY "Announcements update policy" ON public.announcements
-FOR UPDATE TO authenticated USING (
-  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-);
-
-CREATE POLICY "Announcements delete policy" ON public.announcements
-FOR DELETE TO authenticated USING (
-  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
-);
-
 -- 2. Notifications Table
 CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -48,17 +26,3 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 );
 
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Notifications select policy" ON public.notifications
-FOR SELECT TO authenticated USING (user_id = auth.uid());
-
-CREATE POLICY "Notifications insert policy" ON public.notifications
-FOR INSERT TO authenticated WITH CHECK (
-  (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'faculty') OR user_id = auth.uid()
-);
-
-CREATE POLICY "Notifications update policy" ON public.notifications
-FOR UPDATE TO authenticated USING (user_id = auth.uid());
-
-CREATE POLICY "Notifications delete policy" ON public.notifications
-FOR DELETE TO authenticated USING (user_id = auth.uid());
