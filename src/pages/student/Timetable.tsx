@@ -166,7 +166,7 @@ export default function Timetable() {
       </div>
 
       {isLoading ? (
-        <Skeleton className="h-[500px] w-full rounded-2xl" />
+        <TableSkeleton />
       ) : (
         <div className="overflow-x-auto pb-4">
           <div className="min-w-[800px] grid grid-cols-7 gap-px bg-border border border-border rounded-2xl overflow-hidden">
@@ -236,6 +236,12 @@ export default function Timetable() {
               </>
             ))}
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+iv>
         </div>
       )}
     </div>

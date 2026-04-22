@@ -27,7 +27,9 @@ const CampusNav = () => {
         <p className="text-sm text-muted-foreground">Find buildings, rooms & get GPS directions</p>
       </div>
 
-      <CampusMap />
+      <Suspense fallback={<Skeleton className="w-full h-64 rounded-xl" />}>
+        <CampusMap />
+      </Suspense>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

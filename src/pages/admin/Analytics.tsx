@@ -1,13 +1,25 @@
 import { useAnalytics, usePageView } from "@/hooks/useAnalytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
-} from 'recharts';
 import { Users, Activity, GraduationCap, Briefcase, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { exportToCSV } from "@/lib/export";
+import { lazy, Suspense } from "react";
+
+// Lazy load Recharts components
+const LineChart = lazy(() => import('recharts').then(module => ({ default: module.LineChart })));
+const Line = lazy(() => import('recharts').then(module => ({ default: module.Line })));
+const BarChart = lazy(() => import('recharts').then(module => ({ default: module.BarChart })));
+const Bar = lazy(() => import('recharts').then(module => ({ default: module.Bar })));
+const PieChart = lazy(() => import('recharts').then(module => ({ default: module.PieChart })));
+const Pie = lazy(() => import('recharts').then(module => ({ default: module.Pie })));
+const Cell = lazy(() => import('recharts').then(module => ({ default: module.Cell })));
+const XAxis = lazy(() => import('recharts').then(module => ({ default: module.XAxis })));
+const YAxis = lazy(() => import('recharts').then(module => ({ default: module.YAxis })));
+const CartesianGrid = lazy(() => import('recharts').then(module => ({ default: module.CartesianGrid })));
+const Tooltip = lazy(() => import('recharts').then(module => ({ default: module.Tooltip })));
+const ResponsiveContainer = lazy(() => import('recharts').then(module => ({ default: module.ResponsiveContainer })));
+const Legend = lazy(() => import('recharts').then(module => ({ default: module.Legend })));
 
 const COLORS = ['#22c55e', '#f59e0b', '#ef4444', '#3b82f6', '#a855f7'];
 
@@ -60,7 +72,6 @@ export default function AnalyticsDashboard() {
             <div className="text-2xl font-extrabold text-primary">{dau.data?.reduce((acc: any, curr: any) => acc + curr.count, 0) || 0}</div>
           </CardContent>
         </Card>
-        {/* Add more KPI cards if needed */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -72,17 +83,17 @@ export default function AnalyticsDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dau.data}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="day" fontSize={10} tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} />
-                <YAxis fontSize={10} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
-                />
-                <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<Skeleton className="h-full w-full" />}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dau.data}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="day" fontSize={10} tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} />
+                  <YAxis fontSize={10} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }} />
+                  <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </Suspense>
           </CardContent>
         </Card>
 
@@ -94,15 +105,17 @@ export default function AnalyticsDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={featureUsage.data}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="feature" fontSize={10} interval={0} />
-                <YAxis fontSize={10} />
-                <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} />
-                <Bar dataKey="count" fill="#a855f7" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<Skeleton className="h-full w-full" />}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={featureUsage.data}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="feature" fontSize={10} interval={0} />
+                  <YAxis fontSize={10} />
+                  <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+                  <Bar dataKey="count" fill="#a855f7" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Suspense>
           </CardContent>
         </Card>
 
@@ -114,26 +127,28 @@ export default function AnalyticsDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={attendanceHealth.data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="student_count"
-                  nameKey="health_status"
-                >
-                  {attendanceHealth.data?.map((_entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend layout="vertical" align="right" verticalAlign="middle" />
-              </PieChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<Skeleton className="h-full w-full" />}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={attendanceHealth.data}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="student_count"
+                    nameKey="health_status"
+                  >
+                    {attendanceHealth.data?.map((_entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend layout="vertical" align="right" verticalAlign="middle" />
+                </PieChart>
+              </ResponsiveContainer>
+            </Suspense>
           </CardContent>
         </Card>
 
@@ -145,15 +160,17 @@ export default function AnalyticsDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart layout="vertical" data={placementFunnel.data} margin={{ left: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" hide />
-                <YAxis dataKey="round_name" type="category" fontSize={10} width={100} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#f59e0b" radius={[0, 6, 6, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<Skeleton className="h-full w-full" />}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart layout="vertical" data={placementFunnel.data} margin={{ left: 40 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="round_name" type="category" fontSize={10} width={100} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#f59e0b" radius={[0, 6, 6, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Suspense>
           </CardContent>
         </Card>
       </div>

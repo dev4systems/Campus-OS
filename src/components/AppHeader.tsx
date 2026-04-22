@@ -2,14 +2,23 @@ import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import FuseSearch from "@/components/FuseSearch";
 import { NotificationPopover } from "@/components/NotificationPopover";
+import { useState, useEffect } from "react";
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  useEffect(() => {
+    setIsNavigating(true);
+    const timeout = setTimeout(() => setIsNavigating(false), 500);
+    return () => clearTimeout(timeout);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -17,7 +26,9 @@ const AppHeader = () => {
   };
 
   return (
-    <header className="h-14 flex items-center justify-between border-b border-border px-4 glass-strong">
+    <>
+      {isNavigating && <div className="absolute top-0 left-0 w-full h-1 bg-primary animate-pulse z-50" />}
+      <header className="h-14 flex items-center justify-between border-b border-border px-4 glass-strong relative z-40">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
         <span className="text-sm font-medium text-muted-foreground hidden sm:inline">

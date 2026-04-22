@@ -124,9 +124,7 @@ export default function MarkAttendance() {
       {!selectedCourse ? (
         <div className="text-center py-12 text-muted-foreground">Select a course to mark attendance.</div>
       ) : studentsLoading || attendanceLoading ? (
-        <div className="space-y-3">
-          {[1,2,3,4].map(i => <Skeleton key={i} className="h-16 w-full" />)}
-        </div>
+        <TableSkeleton />
       ) : (
         <Card>
           <CardContent className="p-0">
@@ -181,6 +179,17 @@ export default function MarkAttendance() {
               <Button onClick={handleSubmit} disabled={isSubmitting || students.length === 0}>
                 {isSubmitting ? "Saving..." : existingAttendance.length > 0 ? "Update Attendance" : "Save Attendance"}
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+ </div>
+  );
+}
+utton>
             </div>
           </CardContent>
         </Card>

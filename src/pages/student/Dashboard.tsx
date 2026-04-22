@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { BarChart3, BookOpen, ClipboardList, CreditCard, Trophy, Calendar, Bell, ChevronDown, Check, LayoutDashboard, CalendarX, AlertCircle, Receipt, CheckCircle2 } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
 import StatCard from "@/components/StatCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardSkeleton } from "@/components/skeletons/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { examsData, buzzPosts, trendingTags } from "@/data/mockData";

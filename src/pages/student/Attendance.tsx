@@ -79,7 +79,7 @@ export default function StudentAttendance() {
     return attendance.filter(a => new Date(a.date).getMonth() === parseInt(selectedMonth));
   }, [attendance, selectedMonth]);
 
-  if (isLoading) return <div className="space-y-4"><Skeleton className="h-32 w-full"/><Skeleton className="h-64 w-full"/></div>;
+  if (isLoading) return <TableSkeleton />;
 
   const getStatusColor = (pct: number) => {
     if (pct >= 75) return "text-green-500";
@@ -202,6 +202,14 @@ export default function StudentAttendance() {
                   </td>
                 </tr>
               )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+     )}
             </tbody>
           </table>
         </div>
