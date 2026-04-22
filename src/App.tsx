@@ -102,7 +102,7 @@ const App = () => (
             <BrowserRouter>
               <ScrollRevealObserver />
               <ErrorBoundary>
-              <Suspense fallback={<PageTransition><LayoutSkeleton /></PageTransition>}>
+              <Suspense fallback={<LayoutSkeleton />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
