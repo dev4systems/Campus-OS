@@ -191,8 +191,8 @@ const StudentDashboard = () => {
   const displaySubjects = subjects.length > 0 ? subjects : (semesterSubjects[selectedSem] || []);
   const finalSubjects = isDemo ? displaySubjects : (subjectsLoading ? [] : subjects);
 
-  const assignmentsList = isDemo ? mockAssignments : (realAssignments || []);
-  const feesList = isDemo ? mockFees : (realFees || []);
+  const assignmentsList = useMemo(() => isDemo ? mockAssignments : (realAssignments || []), [isDemo, realAssignments]);
+  const feesList = useMemo(() => isDemo ? mockFees : (realFees || []), [isDemo, realFees]);
 
   // Quick alerts
   const alertsLoading = !isDemo && (assignmentsLoading || feesLoading);

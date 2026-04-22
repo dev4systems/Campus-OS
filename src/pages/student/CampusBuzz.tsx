@@ -33,10 +33,18 @@ const CampusBuzz = () => {
   };
 
   const toggleLike = (id: number) => {
-    setLikedPosts((prev) => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
+    setLikedPosts((prev) => { 
+      const s = new Set(prev); 
+      if (s.has(id)) { s.delete(id); } else { s.add(id); } 
+      return s; 
+    });
   };
   const toggleSave = (id: number) => {
-    setSavedPosts((prev) => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
+    setSavedPosts((prev) => { 
+      const s = new Set(prev); 
+      if (s.has(id)) { s.delete(id); } else { s.add(id); } 
+      return s; 
+    });
   };
 
   return (

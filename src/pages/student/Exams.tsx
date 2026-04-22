@@ -88,15 +88,20 @@ const Exams = () => {
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [showPast, setShowPast] = useState(false);
 
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
-
   const allFiltered = useMemo(() => {
     return examsData.filter(e => matchesTypeFilter(e.type, typeFilter));
   }, [typeFilter]);
 
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
   const { thisMonth, upcoming, past } = useMemo(() => {
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
     const thisMonth: typeof examsData = [];
     const upcoming: typeof examsData = [];
     const past: typeof examsData = [];
@@ -120,7 +125,7 @@ const Exams = () => {
     past.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return { thisMonth, upcoming, past };
-  }, [allFiltered, currentMonth, currentYear]);
+  }, [allFiltered, today]);
 
   return (
     <div className="space-y-6 max-w-4xl">

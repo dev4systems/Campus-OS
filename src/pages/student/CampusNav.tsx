@@ -1,9 +1,11 @@
 import { campusBuildings } from "@/data/mockData";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Search, MapPin, Building2, Layers } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import CampusImage from "@/components/CampusImage";
-import CampusMap from "@/components/CampusMap";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const CampusMap = lazy(() => import("@/components/CampusMap"));
 
 const CampusNav = () => {
   const [query, setQuery] = useState("");

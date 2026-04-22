@@ -172,7 +172,7 @@ const CampusMap = () => {
     const map = mapInstance.current;
     if (!map) return;
     map.flyTo([lat, lng], 18, { duration: 0.8 });
-    const marker = markersRef.current.find((m) => (m as any)._locId === id);
+    const marker = markersRef.current.find((m) => (m as L.Marker & { _locId?: string })._locId === id);
     if (marker) marker.openPopup();
     setShowResults(false);
   }, []);
@@ -295,9 +295,10 @@ const CampusMap = () => {
 
   // Expose for popups
   useEffect(() => {
-    (window as any).__campusGetDirections = getDirections;
+    const win = window as Window & { __campusGetDirections?: (lat: number, lng: number, name: string) => void };
+    win.__campusGetDirections = getDirections;
     return () => {
-      delete (window as any).__campusGetDirections;
+      delete win.__campusGetDirections;
     };
   }, [getDirections]);
 
@@ -354,8 +355,9 @@ const CampusMap = () => {
           </div>`,
           { className: "leaflet-popup-themed" }
         );
-      (marker as any)._locId = loc.id;
-      markersRef.current.push(marker);
+      const markerWithId = marker as L.Marker & { _locId: string };
+      markerWithId._locId = loc.id;
+      markersRef.current.push(markerWithId);
     });
   }, [filteredLocations]);
 
