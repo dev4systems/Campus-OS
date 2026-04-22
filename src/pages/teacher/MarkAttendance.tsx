@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/components/skeletons/PageSkeleton";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, CheckCircle2, XCircle, Download } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";

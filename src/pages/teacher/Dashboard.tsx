@@ -3,9 +3,16 @@ import StatCard from "@/components/StatCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { teacherSubjects, teacherStudents } from "@/data/mockData";
 import { AnnouncementsWidget } from "@/components/AnnouncementsWidget";
+import { DashboardSkeleton } from "@/components/skeletons/PageSkeleton";
 
 const TeacherDashboard = () => {
   const { user } = useAuth();
+  
+  // Simulation for loading state if needed
+  const isLoading = false; 
+
+  if (isLoading) return <DashboardSkeleton />;
+
   const lowAttendance = teacherStudents.filter((s) => s.attendance < 75).length;
   const totalStudents = teacherSubjects.reduce((s, sub) => s + sub.students, 0);
 

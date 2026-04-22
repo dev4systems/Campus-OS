@@ -4,6 +4,7 @@ import { useTimetable } from "@/hooks/useTimetable";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/components/skeletons/PageSkeleton";
 import { Download, Printer, Info } from "lucide-react";
 import { motion } from "framer-motion";
 

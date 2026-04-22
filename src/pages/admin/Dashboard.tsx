@@ -3,9 +3,14 @@ import StatCard from "@/components/StatCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { adminStats, adminComplaints } from "@/data/mockData";
 import { AnnouncementsWidget } from "@/components/AnnouncementsWidget";
+import { DashboardSkeleton } from "@/components/skeletons/PageSkeleton";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+
+  // Simulation for loading state
+  const isLoading = false;
+  if (isLoading) return <DashboardSkeleton />;
 
   return (
     <div className="space-y-6 max-w-6xl">
