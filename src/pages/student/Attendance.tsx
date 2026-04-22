@@ -209,11 +209,3 @@ export default function StudentAttendance() {
     </div>
   );
 }
-     )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}

@@ -186,14 +186,3 @@ export default function MarkAttendance() {
     </div>
   );
 }
- </div>
-  );
-}
-utton>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}

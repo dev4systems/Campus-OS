@@ -241,9 +241,3 @@ export default function Timetable() {
     </div>
   );
 }
-iv>
-        </div>
-      )}
-    </div>
-  );
-}
