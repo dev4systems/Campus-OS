@@ -14,8 +14,8 @@ DROP TABLE IF EXISTS public.placement_rounds CASCADE;
 DROP TABLE IF EXISTS public.placement_drives CASCADE;
 DROP TABLE IF EXISTS public.collaboration_requests CASCADE;
 DROP TABLE IF EXISTS public.research_projects CASCADE;
-DROP TABLE IF EXISTS public.attendance CASCADE;
 DROP TABLE IF EXISTS public.attendance_records CASCADE;
+DROP TABLE IF EXISTS public.attendance CASCADE;
 DROP TABLE IF EXISTS public.timetable_slots CASCADE;
 DROP TABLE IF EXISTS public.timetable_templates CASCADE;
 DROP TABLE IF EXISTS public.professors CASCADE;
@@ -53,7 +53,7 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 CREATE TABLE public.events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -78,7 +78,7 @@ CREATE TABLE public.professors (
 
 ALTER TABLE public.professors ENABLE ROW LEVEL SECURITY;
 
--- Timetable Templates (Placeholder for future feature)
+-- Timetable Templates
 CREATE TABLE public.timetable_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE public.timetable_slots (
   slot_number INTEGER NOT NULL CHECK (slot_number BETWEEN 1 AND 8),
   subject_name TEXT NOT NULL,
   subject_code TEXT NOT NULL,
-  faculty_id UUID REFERENCES auth.users(id),
+  faculty_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   room TEXT,
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'published')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -108,19 +108,19 @@ CREATE TABLE public.timetable_slots (
 
 ALTER TABLE public.timetable_slots ENABLE ROW LEVEL SECURITY;
 
--- Attendance Records
-CREATE TABLE public.attendance_records (
+-- Attendance
+CREATE TABLE public.attendance (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  student_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  course_name TEXT NOT NULL,
-  faculty_id UUID REFERENCES auth.users(id),
+  student_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  course_id UUID, -- Optional: link to courses if used
+  faculty_id UUID REFERENCES public.profiles(id),
   date DATE NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('present', 'absent', 'late')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(student_id, course_name, date)
+  UNIQUE(student_id, date) -- Simplified for now, or add course_id to UNIQUE if tracking per subject
 );
 
-ALTER TABLE public.attendance_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.attendance ENABLE ROW LEVEL SECURITY;
 
 -- Research Projects
 CREATE TABLE public.research_projects (
@@ -139,7 +139,7 @@ ALTER TABLE public.research_projects ENABLE ROW LEVEL SECURITY;
 -- Collaboration Requests
 CREATE TABLE public.collaboration_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  student_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  student_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
   project_id UUID REFERENCES public.research_projects(id) ON DELETE CASCADE,
   message TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
@@ -184,7 +184,7 @@ ALTER TABLE public.placement_rounds ENABLE ROW LEVEL SECURITY;
 -- Bug Reports
 CREATE TABLE public.bug_reports (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  reporter_id UUID REFERENCES auth.users(id),
+  reporter_id UUID REFERENCES public.profiles(id),
   title TEXT,
   page_section TEXT,
   description TEXT NOT NULL,
@@ -199,7 +199,7 @@ ALTER TABLE public.bug_reports ENABLE ROW LEVEL SECURITY;
 -- Fees
 CREATE TABLE public.fees (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   fee_type TEXT NOT NULL,
   amount NUMERIC(10,2) NOT NULL DEFAULT 0,
   paid NUMERIC(10,2) NOT NULL DEFAULT 0,
@@ -214,7 +214,7 @@ ALTER TABLE public.fees ENABLE ROW LEVEL SECURITY;
 -- Notifications
 CREATE TABLE public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   message TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT 'system',
@@ -231,7 +231,7 @@ CREATE TABLE public.announcements (
   title TEXT NOT NULL,
   content TEXT NOT NULL,
   target_role TEXT CHECK (target_role IN ('student', 'faculty', 'admin', 'all')) DEFAULT 'all',
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -241,7 +241,7 @@ ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 -- Page Views
 CREATE TABLE public.page_views (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   path TEXT NOT NULL,
   feature TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -289,8 +289,8 @@ CREATE POLICY "Timetable templates select policy" ON public.timetable_templates 
 -- Timetable Slots
 CREATE POLICY "Timetable slots select policy" ON public.timetable_slots FOR SELECT TO authenticated USING (TRUE);
 
--- Attendance Records
-CREATE POLICY "Attendance select policy" ON public.attendance_records FOR SELECT TO authenticated USING (student_id = auth.uid() OR faculty_id = auth.uid() OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
+-- Attendance
+CREATE POLICY "Attendance select policy" ON public.attendance FOR SELECT TO authenticated USING (student_id = auth.uid() OR faculty_id = auth.uid() OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
 
 -- Research Projects
 CREATE POLICY "Research projects select policy" ON public.research_projects FOR SELECT TO authenticated USING (TRUE);
@@ -323,3 +323,27 @@ CREATE POLICY "Announcements insert policy" ON public.announcements FOR INSERT T
 -- Page Views
 CREATE POLICY "Page views select policy" ON public.page_views FOR SELECT TO authenticated USING ((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin');
 CREATE POLICY "Page views insert policy" ON public.page_views FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+-- 5. Analytics Views
+
+CREATE OR REPLACE VIEW public.analytics_dau AS
+SELECT date_trunc('day', created_at)::date as day, count(distinct user_id) as count
+FROM public.page_views WHERE created_at > now() - interval '30 days' GROUP BY 1 ORDER BY 1;
+
+CREATE OR REPLACE VIEW public.analytics_feature_usage AS
+SELECT feature, date_trunc('week', created_at)::date as week, count(*) as count
+FROM public.page_views WHERE feature IS NOT NULL GROUP BY 1, 2 ORDER BY 2, 3 DESC;
+
+CREATE OR REPLACE VIEW public.analytics_attendance_health AS
+WITH student_stats AS (
+  SELECT student_id, count(*) filter (where status = 'present') * 1.0 / count(*) as attendance_rate
+  FROM public.attendance GROUP BY student_id
+)
+SELECT
+  CASE WHEN attendance_rate >= 0.75 THEN 'Safe (>=75%)' WHEN attendance_rate >= 0.60 THEN 'Warning (60-74%)' ELSE 'Critical (<60%)' END as health_status,
+  count(*) as student_count
+FROM student_stats GROUP BY 1;
+
+CREATE OR REPLACE VIEW public.analytics_placement_funnel AS
+SELECT round_name, sum(selected_count) as count, min(sequence_order) as seq
+FROM public.placement_rounds WHERE status = 'completed' GROUP BY 1 ORDER BY 3;
